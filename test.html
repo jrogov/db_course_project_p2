@@ -10,9 +10,65 @@
 				$("table tbody").empty();
 				$.ajax({ dataType: "json", url : "http://localhost:3228/api/employee"}).then(function(data) {
 					for(i = 0; i < data.length; ++i) {
-						$("table tbody").append("<tr><td>" + data[i].lastname + "</td><td>" + data[i].middlename + "</td><td>" + data[i].firstname + "</td><td>" + data[i].hiredate + "</td></tr>");
+						var id = data[i]._id;
+						$("table tbody").append("<tr><td>" + data[i].lastname + "</td><td>" + data[i].middlename + "</td><td>" + data[i].firstname + "</td><td>" + data[i].hiredate + "</td><td><input type=\"button\" value=\"Delete\" onclick=\"return sendDelete('" + id + "');\"></td><td><input type=\"button\" value=\"Update\" onclick=\"return sendUpdate('" + id + "');\"></td></tr>");
 					}
 				});
+			}
+
+			function formJSON()
+			{
+				var $form = $("#employeeform");
+				return {
+					lastname: $form.find("input[name='lastname']").val(),
+					middlename: $form.find("input[name='middlename']").val(),
+					firstname: $form.find("input[name='firstname']").val(),
+					phone: $form.find("input[name='phone']").val(),
+					email: $form.find("input[name='email']").val(),
+					birthdate: Date.now()
+				};
+			}
+
+			function sendDelete(hid)
+			{
+				alert("deleting " + hid);
+				$.ajax({
+    					url: 'http://localhost:3228/api/employee/' + hid,
+    					type: 'DELETE',
+    					success: function(result) {
+    						alert("deleted");
+    						refreshTable();
+    					},
+    					error: function(xhr, status, err) {
+    						alert("failed!");
+    						return false;
+    					}
+				});
+				return true;
+			}
+
+			function sendUpdate(hid)
+			{
+				alert("updating " + hid);
+				var who = formJSON();
+				var data = JSON.stringify(who);
+				alert(data);
+				$.ajax({
+    					url: 'http://localhost:3228/api/employee/' + hid,
+    					type: 'PUT',
+    					data: who,
+    					dataType: 'json',
+    					success: function(result) {
+    						alert("updated");
+    						refreshTable();
+    					},
+    					error: function(xhr, status, err) {
+    						alert("failed!");
+    						return false;
+    					}
+				});
+				return true;
+
 			}
 
 			$(function() {
@@ -30,7 +86,7 @@
 			</tr>
 		</table>
 
-		<h2>Add employee</h2>
+		<h2>Employee form</h2>
 		<form method="post" id="employeeform">
 			Last name:<br>
   			<input type="text" name="lastname"><br>
@@ -48,15 +104,8 @@
 		<script>
 			$("#employeeform").submit(function( event ) {
 				event.preventDefault();
-				var $form = $(this);
-				var employee = {
-					lastname: $form.find("input[name='lastname']").val(),
-					middlename: $form.find("input[name='middlename']").val(),
-					firstname: $form.find("input[name='firstname']").val(),
-					phone: $form.find("input[name='phone']").val(),
-					email: $form.find("input[name='email']").val(),
-					birthdate: Date.now()
-				};
+				
+				var employee = formJSON();
 
 				var data = JSON.stringify(employee);
 				alert(data);

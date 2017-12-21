@@ -24,6 +24,7 @@ server.use(bodyParser.urlencoded({ extended: true}));
 server.use(bodyParser.json());
 server.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -35,6 +36,7 @@ server.get('/api/employee', function(req, res) {
 			res.status(400).send({ error: 'failed to get employees!' });
 		}
 		else { 
+			console.log(emp);
 			res.json(emp);
 		}
 	})
@@ -55,11 +57,18 @@ server.put('/api/employee/:_id', function(req, res) {
 	var id = req.params._id;
 	var emp = req.body;
 
+	console.log(JSON.stringify(emp, null, 4));
+	console.log('updating ' + id);
+
 	Employee.updateEmployee(id, emp, {}, function(error, emp) {
 		if(error) {
+			console.log(error);
 			res.status(400).send({ error: 'failed to update employee!' });
 		}
-		else res.json(emp);
+		else {
+			console.log('updated');
+			res.json(emp);
+		}
 	});
 });
 
@@ -97,6 +106,7 @@ server.delete('/api/hire/:_id', function(req, res) {
 
 server.delete('/api/employee/:_id', function(req, res) {
 	var id = req.params._id;
+	console.log('deleting employee ' + id);
 	Employee.removeEmployee(id, function(error, emp) {
 		if(error) res.status(400).send({ error: 'failed to delete employee!' });
 		else res.status(200).send({message: 'ok'});
