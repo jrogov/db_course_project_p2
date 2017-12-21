@@ -13,28 +13,33 @@ var shopSchema = mongoose.Schema({
 	},
 
 	phone: {
-		type: String
+		type: String,
 		required: [true, 'Phone number required'],
 		unique: [true, 'Duplicate phone number found'],
 		validate: {
-			{ validator: v => /^8[0-9]{10}$/.test(v); },
+			validator: v => /^8[0-9]{10}$/.test(v),
 			message: 'Invalid phone number' }
 	}
 });
 
 var Shop  = module.exports = mongoose.model('Shop', shopSchema, collectionName);
 
+// =============================================================================
+// =                             METHODS                                       =
+// =============================================================================
+
+
 module.exports.addShop = function(shop, callback){
 	Shop.create(shop, callback);
 };
 
-module.exports.updateShop = function(id, product, option, callback){
-	var query = {_id: id};
-	var update = {};
-	if(product.name    !== null) update.name    = product.name
-	if(product.address !== null) update.address = product.address
-	if(product.phone   !== null) update.phone   = product.phone
-	Shop.findOneAndUpdate(query, update, options, callback);
+module.exports.updateShop = function(id, shop, option, callback){
+	var update = {
+		name    : shop.name,
+		address : shop.address,
+		phone   : shop.phone
+	};
+	Shop.findByIdAndUpdate(id, shop, options, callback);
 };
 
 module.exports.deleteShop = function(id, callback){

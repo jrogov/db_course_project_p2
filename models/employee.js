@@ -3,6 +3,35 @@ collectionName='employees'
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId
 
+// Subdocument of hireHistory for Employee
+var hireHistorySchema = mongoose.Schema({
+
+	// TODO Index by contractno
+
+	title: {
+		type: String, required: true },
+
+	salary: {
+		type: Number, required: true },
+
+	shopId: {
+		// type: Number REF??? },
+		type: ObjectId,
+		// ref ,
+		required: true
+	},
+
+	hiredate: {
+		type: Date, required: true },
+
+	fireDate: {
+		type: Date },
+
+	fireReason: {
+		type: String  },
+	}
+);
+
 var employeeSchema = mongoose.Schema({
 	lastname: {
 		type: String,
@@ -25,7 +54,7 @@ var employeeSchema = mongoose.Schema({
 	middlename: {
 		type: String,
 		validate: {
-			{ validator : v => /^[A-Z][a-z]+$/.test(v) },
+			validator: v => /^[A-Z][a-z]+$/.test(v),
 			message: '{VALUE} is not a valid middle name'
 		}
 	},
@@ -40,16 +69,16 @@ var employeeSchema = mongoose.Schema({
 		default: Date.now()
 	},
 
-	// photo: {
-	// 	type: binData //??????
-	// },
+	photo: {
+		type: Buffer
+	},
 
 	phone: {
-		type: String
+		type: String,
 		required: [true, 'Phone number required'],
 		unique: [true, 'Duplicate phone number found'],
 		validate: {
-			{ validator: v => /^8[0-9]{10}$/.test(v); },
+			validator: v => /^8[0-9]{10}$/.test(v),
 			message: 'Invalid phone number' }
 	},
 
@@ -58,56 +87,89 @@ var employeeSchema = mongoose.Schema({
 		required: [true, 'E-mail required'],
 		unique: [true, 'Duplicate phone number found'],
 		validate: {
-			{ validator: v => /.+@.+\..+/.test(v) },
+			validator: v => /.+@.+\..+/.test(v),
 			message: 'Invalid email'
 		}
 	},
 
 
-	hirehistory: {
-		title: {
-			type: String, required: true },
+	hirehistory: [hireHistorySchema],
 
-		salary: {
-			type: Number, required: true },
-
-		shopId: {
-			// type: Number REF??? },
-			type: ObjectId,
-			ref},
-
-		hiredate: {
-			type: Date, required: true },
-
-		fireDate: {
-			type: Date },
-
-		fireReason: { ,
-			type: String  },
-	},
-	{
-		minimize: false,
-
-	}
-});
+},
+{
+	minimize: false,
+}
+);
 
 
 var Employee = module.exports = mongoose.model('Employee', employeeSchema, collectionName);
 
+// =============================================================================
+// =                             METHODS                                       =
+// =============================================================================
+
+
 module.exports.getEmployees = function(callback){
-    Employee.find(callback);
+	Employee.find({}, callback)
 };
 
-module.exports.addEmployee = function(client, callback){
-    Employee.create(client, callback)
+
+module.exports.addEmployees = function(employees, callback){
+    Employee.create(employees, callback);
 };
+
 
 module.exports.findEmployeeById = function(id, callback){
-	Employee.create
+	Employee.findById(id, callback);
 };
+
+
+module.exports.updateEmployee = function(id, people, options, callback){
+	var update = {
+		lastname   : people.lastname,
+		firstname  : people.firstname,
+		middlename : people.middlename,
+		phone      : people.phone,
+		email      : people.email
+	};
+	Employee.findByIdAndUpdate(id, update, options, callback);
+}
+
+
+module.exports.addHiring = function(id, hiring, callback){
+	var new_hiring = {
+		title    : hiring.title,
+		salary   : hiring.salary,
+		shopId   : hiring.shopId,
+		hiredate : hiring.hiredate
+	};
+
+	var update = {
+		$push: { hirehistory: new_hiring }
+	};
+
+	Employee.findByIdAndUpdate(id, update, callback);
+};
+
+
+module.exports.fireEmployee = function(contractid, fireReason, callback){
+	var query = {
+		hirehistory: {
+			$elemMatch: { _id: contractid }
+		}
+	}
+	var update = {
+		$set: {
+			"hirehistory.$.fireDate"  : new Date,
+			"fireReason.$.fireReason" : fireReason
+		}
+	}
+
+	// probably BUG: change to .update
+	Employee.findOneAndUpdate(query, update, callback);
+};
+
 
 module.exports.removeEmployee = function(id, callback){
-    var query = {_id: id};
-    Employee.remove(query, callback);
+    Employee.findByIdAndRemove(id, callback);
 };
-

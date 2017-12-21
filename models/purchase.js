@@ -2,6 +2,17 @@ collectionName='purchases'
 
 var mongoose = require('mongoose');
 
+var productItem = mongoose.Schema({
+	productId: {
+		type: Number,
+		required: [ true, 'ProductId required' ]
+	},
+	count: {
+		type: Number,
+		required: [ true, 'Product Count required']
+		}
+});
+
 var purchaseSchema = mongoose.Schema({
 	shopid: {
 		type: Number, /*REF???*/
@@ -18,26 +29,17 @@ var purchaseSchema = mongoose.Schema({
 		required: [ true, 'Purchase Date required' ]
 	},
 
-	items: {
-		productId: {
-			type: Number,
-			required: [ true, 'ProductId required' ]
-		},
-		count: {
-			type: Number,
-			required: [ true, 'Product Count required']
-		}
-	}
+	items: [ productItem ]
 });
 
 var Purchase = module.exports = mongoose.model('Purchase', purchaseSchema, collectionName);
 
 module.exports.addPurchase = function(shopid, cassierid, items, callback){
 	var query = {
-		shopid: shopid,
-		cassierid: cassierid,
-		purchasedate: new Date,
-		items: items
+		shopid       : shopid,
+		cassierid    : cassierid,
+		purchasedate : new Date,
+		items        : items
 	}
 	Purchase.create(query, callback);
 }
@@ -47,11 +49,9 @@ module.exports.getPurchases = function(callback){
 }
 
 module.exports.findPurchaseById = function(id, callback){
-	query:
+	Purchase.findById(id, callback);
 }
 
-create_purchase
-create_purchase_item
-delete_purchase_item
-delete_purchase
-finalize_purchase
+module.exports.findPurchases = function(cond, options, callback){
+	Purchase.find(cond, options, callback);
+}
