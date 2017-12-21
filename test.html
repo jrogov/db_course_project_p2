@@ -1,0 +1,77 @@
+<html>
+	<head>
+		 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<title>Document DB client</title>
+	</head>
+	<body>
+		<script>
+			function refreshTable()
+			{
+				$("table tbody").empty();
+				$.ajax({ dataType: "json", url : "http://localhost:3228/api/employee"}).then(function(data) {
+					for(i = 0; i < data.length; ++i) {
+						$("table tbody").append("<tr><td>" + data[i].lastname + "</td><td>" + data[i].middlename + "</td><td>" + data[i].firstname + "</td><td>" + data[i].hiredate + "</td></tr>");
+					}
+				});
+			}
+
+			$(function() {
+				refreshTable();
+			});
+		</script>
+
+		<h1>Employees</h1>
+		<table>
+			<tr>
+				<th>Last Name</th>
+				<th>Middle Name</th>
+				<th>First Name</th>
+				<th>Hire Date</th>
+			</tr>
+		</table>
+
+		<h2>Add employee</h2>
+		<form method="post" id="employeeform">
+			Last name:<br>
+  			<input type="text" name="lastname"><br>
+  			Middle name:<br>
+  			<input type="text" name="middlename"><br>
+  			First name:<br>
+  			<input type="text" name="firstname"><br>
+  			Phone:<br>
+  			<input type="text" name="phone"><br>
+  			Email:<br>
+  			<input type="text" name="email"><br>
+  			<input type="submit" value="Submit">
+		</form>
+
+		<script>
+			$("#employeeform").submit(function( event ) {
+				event.preventDefault();
+				var $form = $(this);
+				var employee = {
+					lastname: $form.find("input[name='lastname']").val(),
+					middlename: $form.find("input[name='middlename']").val(),
+					firstname: $form.find("input[name='firstname']").val(),
+					phone: $form.find("input[name='phone']").val(),
+					email: $form.find("input[name='email']").val(),
+					birthdate: Date.now()
+				};
+
+				var data = JSON.stringify(employee);
+				alert(data);
+
+				var result = $.post("http://localhost:3228/api/employee", employee)
+				.done(function() {
+					alert("done!");
+					refreshTable();
+				})
+				.fail(function() {
+					alert("failure!");
+				});
+
+			});
+		</script>
+		
+	</body>
+</html>
