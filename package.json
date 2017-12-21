@@ -4,7 +4,10 @@
   "description": "DB course project Part 2 based on MongoDB",
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^4.13.6"
+    "angular": "^1.6.7",
+    "express": "^4.16.2",
+    "mongoose": "^4.13.7",
+    "redis": "^2.8.0"
   },
   "devDependencies": {},
   "scripts": {
