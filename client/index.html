@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="fiveyApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- External Styles from W3C and Bootstrap -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-route.js"></script>
+
+
+    <!-- Routes -->
+    <script src="app.js"></script>
+
+    <!-- Controllers -->
+    <script src="employee.js"></script>
+    <script src="product.js"></script>
+    <script src="purchase.js"></script>
+    <script src="shop.js"></script>
+    <script src="stockchange.js"></script>
+    <script src="supplier.js"></script>
+    <script src="database.js"></script>
+
+
+    <title>Fivey Store</title>
+
+    <style>
+    body {
+        background-color: #c7b39b; /* Цвет фона */
+    }
+
+</style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="masthead">
+            <h1>Fivey Store</h1>
+            <!-- <nav class="navbar navbar-expand-md navbar-light bg-light rounded mb-3"> -->
+                <nav class="navbar navbar-expand-md navbar-light bg-light rounded mb-3">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav text-md-center nav-justified w-100">
+
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#!employees">Employees</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#!products">Products</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#!purchases">Purchases</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#!shops">Shops</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#!stockchanges">Stock Changes</a>
+                            </li>
+                            <li class="nav-item">
+                             <a class="nav-link" href="#!suppliers">Suppliers</a>
+                            </li>
+                            <!-- Future support for Database Management: drop database, regenerate data, etc. -->
+                            <!-- <li class="nav-item">
+                             <a class="nav-link" href="#!suppliers">Database</a>
+                            </li> -->
+
+                     </ul>
+                 </div>
+             </nav>
+         </header>
+
+         <main ng-view></main>
+     </div>
+ </body>
+ </html>
