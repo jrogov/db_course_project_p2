@@ -1,6 +1,7 @@
 collectionName='purchases'
 
 var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var productItem = mongoose.Schema({
 	productId: {
@@ -15,12 +16,14 @@ var productItem = mongoose.Schema({
 
 var purchaseSchema = mongoose.Schema({
 	shopid: {
-		type: Number, /*REF???*/
+		type: ObjectId,
+		ref: 'Shop',
 		required: [ true, 'ShopId required' ]
 	},
 
 	cassierid: {
-		type: Number, /*REF???*/
+		type: ObjectId,
+		ref: 'Employee',
 		required: [ true, 'CassierId required' ]
 	},
 

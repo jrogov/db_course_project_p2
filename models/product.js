@@ -1,6 +1,7 @@
 collectionName='products'
 
 var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var productSchema = mongoose.Schema({
 
@@ -10,7 +11,8 @@ var productSchema = mongoose.Schema({
 	},
 
 	supplierid: {
-		type: Number, /*REF???*/
+		type: ObjectId,
+		ref: 'Supplier',
 		required: [ true, 'SupplierId required' ]
 	},
 

@@ -15,7 +15,7 @@ var shopSchema = mongoose.Schema({
 	phone: {
 		type: String,
 		required: [true, 'Phone number required'],
-		unique: [true, 'Duplicate phone number found'],
+		// unique: [true, 'Duplicate phone number found'],
 		validate: {
 			validator: v => /^8[0-9]{10}$/.test(v),
 			message: 'Invalid phone number' }

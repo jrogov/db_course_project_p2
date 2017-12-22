@@ -15,9 +15,8 @@ var hireHistorySchema = mongoose.Schema({
 		type: Number, required: true },
 
 	shopId: {
-		// type: Number REF??? },
 		type: ObjectId,
-		// ref ,
+		ref: 'Shop',
 		required: true
 	},
 
@@ -136,7 +135,7 @@ module.exports.updateEmployee = function(id, people, options, callback){
 }
 
 
-module.exports.addHiring = function(id, hiring, callback){
+module.exports.hireEmployee = function(id, hiring, callback){
 	var new_hiring = {
 		title    : hiring.title,
 		salary   : hiring.salary,
@@ -152,16 +151,17 @@ module.exports.addHiring = function(id, hiring, callback){
 };
 
 
-module.exports.fireEmployee = function(contractid, fireReason, callback){
+module.exports.fireEmployee = function(contractid, fireData, callback){
 	var query = {
 		hirehistory: {
 			$elemMatch: { _id: contractid }
 		}
 	}
+	if( !fireData.date ) fireData['date'] = new Date();
 	var update = {
 		$set: {
-			"hirehistory.$.fireDate"  : new Date,
-			"fireReason.$.fireReason" : fireReason
+			"hirehistory.$.fireDate"  : fireData.Date,
+			"fireReason.$.fireReason" : fireData.fireReason
 		}
 	}
 

@@ -1,11 +1,12 @@
 collectionName='stockchanges'
 
 var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var stockItem = mongoose.Schema({
 	productid: {
-		type: Number,
-		// TODO: REF
+		type: ObjectId,
+		ref: 'Product',
 		required: [true, 'ProductId required' ]
 	},
 	count: {
