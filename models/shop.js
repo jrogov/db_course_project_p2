@@ -33,6 +33,10 @@ module.exports.addShop = function(shop, callback){
 	Shop.create(shop, callback);
 };
 
+module.exports.getShops = function(callback){
+	Shop.find(callback);
+}
+
 module.exports.updateShop = function(id, shop, option, callback){
 	var update = {
 		name    : shop.name,
