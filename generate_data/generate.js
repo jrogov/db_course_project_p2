@@ -152,7 +152,7 @@ function generate(){
                     middlename : rand_elem(names),
                     birthdate  : birthdate,
                     hiredate   : first_hire_date,
-                    photo      : rand_elem(images),
+                    photo      : rand_elem(images).toString('base64'),
                     phone      : rand_phone(),
                     email      : firstname+birthdate.getYear()+'@'+rand_elem(domains),
                     hirehistory: [{

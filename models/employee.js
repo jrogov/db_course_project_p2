@@ -36,7 +36,7 @@ var employeeSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'Last name required'],
 		validate: {
-			validator : v => /^[A-Z][a-z]+$/.test(v),
+			validator : v => /^([A-Z][a-z]* ?)+$/.test(v),
 			message: '{VALUE} is not a valid last name'
 		}
 	},
@@ -45,7 +45,7 @@ var employeeSchema = mongoose.Schema({
 		type: String,
 		required: [true, 'First name required'],
 		validate: {
-			validator : v => /^[A-Z][a-z]+$/.test(v),
+			validator : v => /^([A-Z][a-z]* ?)+$/.test(v),
 			message: '{VALUE} is not a valid first name'
 		}
 	},
@@ -53,7 +53,7 @@ var employeeSchema = mongoose.Schema({
 	middlename: {
 		type: String,
 		validate: {
-			validator: v => /^[A-Z][a-z]+$/.test(v),
+			validator: v => /^([A-Z][a-z]* ?)+$/.test(v),
 			message: '{VALUE} is not a valid middle name'
 		}
 	},
@@ -69,7 +69,7 @@ var employeeSchema = mongoose.Schema({
 	},
 
 	photo: {
-		type: Buffer
+		type: String
 	},
 
 	phone: {
@@ -84,7 +84,7 @@ var employeeSchema = mongoose.Schema({
 	email: {
 		type: String,
 		required: [true, 'E-mail required'],
-		unique: [true, 'Duplicate phone number found'],
+		// unique: [true, 'Duplicate phone number found'],
 		validate: {
 			validator: v => /.+@.+\..+/.test(v),
 			message: 'Invalid email'
