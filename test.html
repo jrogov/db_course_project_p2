@@ -1,17 +1,118 @@
 <html>
 	<head>
-		 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<title>Document DB client</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<style>
+			tr:nth-child(even) {
+				background-color: #ccffff;
+			}
+
+			.overlay {
+				display: none;
+				position: fixed;
+				z-index: 1;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgb(0,0,0,0.3);
+			}
+
+			.inputform {
+				background-color: #ddddff;
+				position: relative;
+				margin: 15%;
+				padding: 20px;
+				border: 1px solid #666699;
+				width: 30%;
+			}
+
+			.hireform {
+				display: none;
+				background-color: #ddddff;
+				position: relative;
+				margin: 15%;
+				padding: 20px;
+				border: 1px solid #666699;
+			}
+
+			.closebtn {
+				position: absolute;
+				right: 15px;
+				top: 0;
+				color: #000000;
+				font-size: 32px;
+			}
+
+			.closebtn:hover {
+				color: red;
+				cursor: pointer;
+			}
+
+			.msg {
+				padding: 4px;
+				margin: 6px;
+				color: white;
+				line-height: 1;
+				display: inline;
+			}
+
+			.error {
+				background-color: #ff3333;
+			}
+
+			.success {
+				background-color: #33ff33;
+			}
+
+			input[type=text] {
+				width: 100%;
+				padding: 8px;
+				margin: 6px;
+				display: inline-block;
+				box-sizing: border-box;
+			}
+
+			input[type=button] {
+				color: white;
+				padding: 12px;
+				margin: 6px;
+				border: none;
+				line-height: 1;
+				cursor: pointer;
+			}
+
+			.updatebtn {
+				background-color: #55ff55;
+			}
+
+			.deletebtn {
+				background-color: #ff6666;
+			}
+
+			body {
+				font-family: Verdana,sans-serif;
+				line-height: 1.5;
+			}
+		</style>
+		<title>SUBD Client</title>
 	</head>
 	<body>
 		<script>
 			function refreshTable()
 			{
-				$("table tbody").empty();
+				$("#employeetable").find("tr:not(:first)").remove();
 				$.ajax({ dataType: "json", url : "http://localhost:3228/api/employee"}).then(function(data) {
 					for(i = 0; i < data.length; ++i) {
 						var id = data[i]._id;
-						$("table tbody").append("<tr><td>" + data[i].lastname + "</td><td>" + data[i].middlename + "</td><td>" + data[i].firstname + "</td><td>" + data[i].hiredate + "</td><td><input type=\"button\" value=\"Delete\" onclick=\"return sendDelete('" + id + "');\"></td><td><input type=\"button\" value=\"Update\" onclick=\"return sendUpdate('" + id + "');\"></td></tr>");
+						$("#employeetable tbody").append("<tr onclick='showHireHistory(\"" + id + "\")'><td>" + data[i].lastname + "</td><td>" + data[i].middlename + "</td><td>" + data[i].firstname + "</td><td>" + data[i].hiredate + "</td><td>" + data[i].birthdate + "</td><td>" + data[i].phone + "</td><td>" + data[i].email + "</td><td><input type=\"button\" class='updatebtn' value=\"Update\" onclick=\"return showUpdateForm('" + id + "');\"></td><td><input type=\"button\" class='deletebtn' value=\"Delete\" onclick=\"event.stopPropagation(); return sendDelete('" + id + "');\"></td></tr>");
+
+						$("#popuphires").append("<div class='hireform' id='hiring" + id + "'><span class='closebtn' onclick='closeHireHistory(\"" + id + "\");'>&times;</span><table></table></div>");
+						for(j = 0; j < data.hirehistory; ++i) {
+							
+							$("#popuphires #hiring" + id + " table tbody").append("<tr><td>" + data.hirehistory[j].title + "</td><td>" + data.hirehistory[j].salary + "</td><td>" + data.hirehistory[j].shopId + "</td><td><input type=\"button\" class='deletbtn' value='Fire' onclick=\"sendFire('" + id + "', '" + data.hirehistory[j]._id + "');\"></td></tr>");
+						}
+						$("#popuphires #hiring" + id).append("<h2>Hiring History</h2>");
+						$("#popuphires #hiring" + id).append("<input type=\"button\" class='updatebtn' value=\"Hire\" onclick=\"showHiringForm('" + id + "');\">");
 					}
 				});
 			}
@@ -29,46 +130,168 @@
 				};
 			}
 
-			function sendDelete(hid)
+			function hireFormJSON()
 			{
-				alert("deleting " + hid);
+				var $form = $("#hireempform");
+				return {
+					title: $form.find("input[name='title']").val(),
+					salary: +($form.find("input[name='salary']").val()),
+					shopId: +($form.find("input[name='shopid']").val()),
+					hiredate: Date.now()
+				};
+			}
+
+			function setMessage(str)
+			{
+				$('#message').html(str).removeClass('error').addClass('success');
+			}
+
+			function setErrorMessage(str)
+			{
+				$('#message').html(str).removeClass('success').addClass('error');
+			}
+
+			function showHireHistory(id)
+			{
+				$("#popuphires").css('display', 'block');
+				$("#popuphires #hiring" + id).css('display', 'block');
+			}
+
+			function closeHireHistory(id)
+			{
+				$("#popuphires").css('display', 'none');
+				$("#popuphires #hiring" + id).css('display', 'none');
+			}
+
+			function closeForm()
+			{
+				$('#popupform').css('display', 'none');
+				$('#popuphireemp').css('display', 'none');
+			}
+
+			function showHiringForm(id)
+			{
+				closeHireHistory(id);
+				$('#hireempform').find("input[name='id']").val(id);
+				$('#popuphireemp').css('display', 'block');
+				$("#hireempform").off( "submit" ).submit(sendHire);
+			}
+
+			function sendFire(id)
+			{
+				$.ajax({
+    					url: 'http://localhost:3228/api/hiring/' + id,
+    					type: 'DELETE',
+    					success: function(result) {
+    						setMessage("deleted");
+    						refreshTable();
+    					},
+    					error: function(xhr, status, err) {
+    						setErrorMessage("failed!");
+    					}
+				});
+			}
+
+			function sendHire(event)
+			{
+				event.preventDefault();
+				var id = $('#hireempform').find("input[name='id']").val();
+				var hiring = hireFormJSON();
+				console.log('sending hire');
+
+				var data = JSON.stringify(hiring);
+				console.log(data);
+
+				var result = $.post("http://localhost:3228/api/hiring", id, hiring)
+					.done(function() {
+						setMessage("done");
+						refreshTable();
+					})
+					.fail(function() {
+						setErrorMessage("failure");
+					});
+				closeForm();
+				return true;
+			}
+
+			function sendDelete(hid)
+			{				
 				$.ajax({
     					url: 'http://localhost:3228/api/employee/' + hid,
     					type: 'DELETE',
     					success: function(result) {
-    						alert("deleted");
+    						setMessage("deleted");
     						refreshTable();
     					},
     					error: function(xhr, status, err) {
-    						alert("failed!");
-    						return false;
+    						setErrorMessage("failed!");
     					}
 				});
-				return true;
 			}
 
-			function sendUpdate(hid)
+			function sendUpdate(event)
 			{
-				alert("updating " + hid);
+				event.preventDefault();
+				console.log('sending update');
+				var hid = $('#employeeform').find("input[name='id']").val();
 				var who = formJSON();
 				var data = JSON.stringify(who);
-				alert(data);
+				console.log(data);
+
+				
 				$.ajax({
     					url: 'http://localhost:3228/api/employee/' + hid,
     					type: 'PUT',
     					data: who,
     					dataType: 'json',
     					success: function(result) {
-    						alert("updated");
+    						setMessage("updated");
     						refreshTable();
+    						return true;
     					},
     					error: function(xhr, status, err) {
-    						alert("failed!");
+    						setErrorMessage("failed!");
     						return false;
     					}
 				});
+				closeForm();
 				return true;
+			}
 
+			function sendAdd(event)
+			{
+				event.preventDefault();
+				var employee = formJSON();
+				console.log('sending add');
+
+				var data = JSON.stringify(employee);
+				console.log(data);
+
+				var result = $.post("http://localhost:3228/api/employee", employee)
+					.done(function() {
+						setMessage("done");
+						refreshTable();
+					})
+					.fail(function() {
+						setErrorMessage("failure");
+					});
+				closeForm();
+			}
+
+
+			function showAddForm()
+			{
+				$('#inputtitle').html('Add Employee');
+				$('#popupform').css('display', 'block');
+				$("#employeeform").off( "submit" ).submit(sendAdd);
+			}
+
+			function showUpdateForm(id)
+			{
+				$('#inputtitle').html('Update Employee');
+				$('#employeeform').find("input[name='id']").val(id);
+				$('#popupform').css('display', 'block');
+				$("#employeeform").off( "submit" ).submit(sendUpdate);
 			}
 
 			$(function() {
@@ -77,50 +300,59 @@
 		</script>
 
 		<h1>Employees</h1>
-		<table>
+		<table id="employeetable">
 			<tr>
 				<th>Last Name</th>
 				<th>Middle Name</th>
 				<th>First Name</th>
 				<th>Hire Date</th>
+				<th>Birth Date</th>
+				<th>Phone</th>
+				<th>Email</th>
 			</tr>
 		</table>
+		<input type="button" class='updatebtn' value="Add Employee" onclick="showAddForm()">
+		<div id="message" class="msg"></div>
 
-		<h2>Employee form</h2>
-		<form method="post" id="employeeform">
-			Last name:<br>
-  			<input type="text" name="lastname"><br>
-  			Middle name:<br>
-  			<input type="text" name="middlename"><br>
-  			First name:<br>
-  			<input type="text" name="firstname"><br>
-  			Phone:<br>
-  			<input type="text" name="phone"><br>
-  			Email:<br>
-  			<input type="text" name="email"><br>
-  			<input type="submit" value="Submit">
-		</form>
-
-		<script>
-			$("#employeeform").submit(function( event ) {
-				event.preventDefault();
-				
-				var employee = formJSON();
-
-				var data = JSON.stringify(employee);
-				alert(data);
-
-				var result = $.post("http://localhost:3228/api/employee", employee)
-				.done(function() {
-					alert("done!");
-					refreshTable();
-				})
-				.fail(function() {
-					alert("failure!");
-				});
-
-			});
-		</script>
-		
+		<div class="overlay" id="popupform">
+			<div class="inputform">
+				<span class="closebtn" onclick="$('#popupform').css('display','none')">&times;</span>
+				<h2 id='inputtitle'>Add Employee</h1>
+				<form method="post" id="employeeform">
+					<input type="hidden" name="id">
+					<label>Last name</label>
+  					<input type="text" name="lastname"><br>
+  					<label>Middle name</label>
+  					<input type="text" name="middlename"><br>
+  					<label>First name</label>
+  					<input type="text" name="firstname"><br>
+  					<label>Phone</label>
+  					<input type="text" name="phone"><br>
+  					<label>Email</label>
+  					<input type="text" name="email"><br>
+  					<label>Photo</label>
+  					<input type="file" name="file"><br>
+  					<input type="submit" value="Submit">
+				</form>
+			</div>
+		</div>
+		<div class="overlay" id="popuphires">
+		</div>
+		<div class="overlay" id="popuphireemp">
+			<div class="inputform">
+				<span class="closebtn" onclick="$('#popuphireemp').css('display','none')">&times;</span>
+				<h2 id='inputtitle'>Hire Employee</h1>
+				<form method="post" id="hireempform">
+					<input type='hidden' name="id">
+					<label>Title</label>
+  					<input type="text" name="title"><br>
+  					<label>Salary</label>
+  					<input type="text" name="salary"><br>
+  					<label>Shop ID</label>
+  					<input type="text" name="shopid"><br>
+  					<input type="submit" value="Submit">
+				</form>
+			</div>
+		</div>
 	</body>
 </html>

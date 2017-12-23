@@ -29,30 +29,56 @@ server.use(function(req, res, next) {
   next();
 });
 
+function isEmpty(obj)
+{
+	for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+    return true;
+}
+
 // get employees
 server.get('/api/employee', function(req, res) {
 	console.log('sending employees');
-	Employee.getEmployees(function (error, emp) {
-		if(error) {
-			res.status(400).send({ message: 'fail', error: error });
+	cache.get("employee", function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			console.log("did not find in cache, querying db");
+			Employee.getEmployees(function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					res.json(emp);
+					cache.set("employee", JSON.stringify(emp));
+				}
+			});
 		}
-		else { 
-			console.log(emp);
-			res.json(emp);
+		else {
+			console.log("found in cache");
+			res.json(JSON.parse(rep));
 		}
-	})
+	});
 });
 
 // get employee by id
 server.get('/api/employee/:_id', function(req, res) {
 	var id = req.params._id;
 
-	Employee.findEmployeeById(id, function (error, emp) {
-		if(error) {
-			res.status(400).send({ message: 'fail', error: error });
-		}
-		else res.json(emp);
-	})
+	cache.get("employee:" + id), function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			Employee.findEmployeeById(id, function (error, emp) {
+			if(error) res.status(400).send({ message: 'fail', error: error });
+			else {
+				res.json(emp);
+				cache.set("employee:"+id, JSON.stringify(emp));
+			}
+		});
+	}
+	else {
+		console.log("found in cache");
+		res.json(JSON.parse(rep));
+	}
 });
 
 // update employee
@@ -71,6 +97,8 @@ server.put('/api/employee/:_id', function(req, res) {
 		else {
 			console.log('updated');
 			res.json(emp);
+			cache.del("employee");
+			cache.del("employee:" + id);
 		}
 	});
 });
@@ -85,6 +113,7 @@ server.post('/api/employee', function(req, res) {
 		}
 		else {
 			res.json(emp);
+			cache.del("employee");
 		}
 	});
 });
@@ -97,6 +126,8 @@ server.post('/api/hire/:_id', function(req, res) {
 		}
 		else {
 			res.json(emp);
+			cache.del("employee");
+			cache.del("employee:" + id);
 		}
 	});
 });
@@ -106,7 +137,11 @@ server.delete('/api/hire/:_id', function(req, res) {
 	var id = req.params._id;
 	Employee.removeEmployee(id, function(error, emp) {
 		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.status(200).send({message: 'ok'});
+		else {
+			res.status(200).send({message: 'ok'});
+			cache.del("employee");
+			cache.del("employee:" + id);
+		}
 	});
 });
 
@@ -116,7 +151,11 @@ server.delete('/api/employee/:_id', function(req, res) {
 	console.log('deleting employee ' + id);
 	Employee.removeEmployee(id, function(error, emp) {
 		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.status(200).send({message: 'ok'});
+		else {
+			res.status(200).send({message: 'ok'});
+			cache.del("employee");
+			cache.del("employee:" + id);
+		} 
 	});
 });
 
@@ -124,24 +163,41 @@ server.delete('/api/employee/:_id', function(req, res) {
 // get products
 server.get('/api/product', function(req, res) {
 	console.log('sending products');
-	Product.getProducts(function (error, emp) {
-		if(error) {
-			res.status(400).send({ message: 'fail', error: error });
+	cache.get("product", function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			Product.getProducts(function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else { 
+					res.json(emp);
+					cache.set("product", JSON.stringify(emp));
+				}
+			});
 		}
-		else res.json(emp);
-	})
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
 // get product by id
 server.get('/api/product/:_id', function(req, res) {
 	var id = req.params._id;
-
-	Product.findProductById(id, function (error, emp) {
-		if(error) {
-			res.status(400).send({ message: 'fail', error: error });
+	cache.get("product:" + id, function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			Product.findProductById(id, function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					res.json(emp);
+					cache.set("product:" + id, JSON.stringify(emp));
+				}
+			});
 		}
-		else res.json(emp);
-	})
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
 // add product
@@ -155,6 +211,7 @@ server.post('/api/product', function(req, res) {
 		}
 		else {
 			res.json(emp);
+			cache.del("product");
 		}
 	});
 });
@@ -174,6 +231,8 @@ server.put('/api/product/:_id', function(req, res) {
 		}
 		else {
 			console.log('updated');
+			cache.del("product");
+			cache.del("product:" + id);
 			res.json(emp);
 		}
 	});
@@ -185,7 +244,11 @@ server.delete('/api/product/:_id', function(req, res) {
 	console.log('deleting product ' + id);
 	Product.removeProduct(id, function(error, emp) {
 		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.status(200).send({message: 'ok'});
+		else {
+			cache.del("product");
+			cache.del("product:" + id);
+			res.status(200).send({message: 'ok'});
+		}
 	});
 });
 
@@ -193,20 +256,43 @@ server.delete('/api/product/:_id', function(req, res) {
 // get purchase
 server.get('/api/purchase', function(req, res) {
 	console.log('sending purchases');
-	Purchase.getPurchases(function (error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.json(emp);
-	})
+	cache.get("purchase", function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep))
+		{
+			Purchase.getPurchases(function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					res.json(emp);
+					cache.set("purchase", JSON.stringify(emp));
+				}
+			});
+		}
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
 // get purchase by id
 server.get('/api/purchase/:_id', function(req, res) {
 	var id = req.params._id;
-
-	Purchase.findPurchaseById(id, function (error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.json(emp);
-	})
+	cache.get("purchase:" + id, function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep))
+		{
+			Purchase.findPurchaseById(id, function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					res.json(emp);
+					cache.set("purchase:" + id, JSON.stringify(emp));
+				}
+			});
+		}
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
 // add purchase
@@ -218,7 +304,11 @@ server.post('/api/purchase', function(req, res) {
 			console.log(error);
 			res.status(400).send({ message: 'fail', error: error });
 		}
-		else res.json(emp);
+		else {
+			cache.del("purchase");
+			cache.del("purchase:" + id);
+			res.json(emp);
+		}
 	});
 });
 
@@ -226,10 +316,21 @@ server.post('/api/purchase', function(req, res) {
 // get shops
 server.get('/api/shop', function(req, res) {
 	console.log('sending shops');
-	Shop.getShops(function (error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.json(emp);
-	})
+	cache.get("shop", function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			Shop.getShops(function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					res.json(emp);
+					cache.set("shop", JSON.stringify(emp));
+				}
+			});
+		}
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
 // add shop
@@ -241,7 +342,10 @@ server.post('/api/shop', function(req, res) {
 			console.log(error);
 			res.status(400).send({ message: 'fail', error: error });
 		}
-		else res.json(emp);
+		else {
+			cache.del("shop");
+			res.json(emp);
+		}
 	});
 });
 
@@ -251,7 +355,10 @@ server.delete('/api/shop/:_id', function(req, res) {
 	console.log('deleting shop ' + id);
 	Shop.deleteShop(id, function(error, emp) {
 		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.status(200).send({message: 'ok'});
+		else {
+			cache.del("shop");
+			res.status(200).send({message: 'ok'});
+		}
 	});
 });
 
@@ -270,6 +377,7 @@ server.put('/api/shop/:_id', function(req, res) {
 		}
 		else {
 			console.log('updated');
+			cache.del("shop");
 			res.json(emp);
 		}
 	});
@@ -279,20 +387,41 @@ server.put('/api/shop/:_id', function(req, res) {
 // get stock changes
 server.get('/api/stockchange', function(req, res) {
 	console.log('sending stock changes');
-	StockChange.getStockChanges(function (error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.json(emp);
-	})
+	cache.get("stockchange", function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			StockChange.getStockChanges(function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					cache.set("stockchange", JSON.stringify(emp));
+					res.json(emp);
+				}
+			});
+		}
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
 // get stock change by id
 server.get('/api/stockchange/:_id', function(req, res) {
 	var id = req.params._id;
-
-	StockChange.findStockChangeById(id, function (error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.json(emp);
-	})
+	cache.get("stockchange:" + id, function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			StockChange.findStockChangeById(id, function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					cache.set("stockchange:" + id, JSON.stringify(emp));
+					res.json(emp);
+				}
+			});
+		}
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
 // add stock change
@@ -304,7 +433,10 @@ server.post('/api/stockchange', function(req, res) {
 			console.log(error);
 			res.status(400).send({ message: 'fail', error: error });
 		}
-		else res.json(emp);
+		else {
+			cache.del("stockchange");
+			res.json(emp);
+		}
 	});
 });
 
@@ -318,7 +450,11 @@ server.post('/api/stockchange/:_id/items', function(req, res) {
 			console.log(error);
 			res.status(400).send({ message: 'fail', error: error });
 		}
-		else res.json(emp);
+		else {
+			cache.del("stockchange");
+			cache.del("stockchange:" + id);
+			res.json(emp);
+		}
 	});
 });
 
@@ -337,6 +473,8 @@ server.put('/api/stockchange/:_id/items', function(req, res) {
 		}
 		else {
 			console.log('updated');
+			cache.del("stockchange");
+			cache.del("stockchange:" + id);
 			res.json(emp);
 		}
 	});
@@ -347,23 +485,44 @@ server.put('/api/stockchange/:_id/items', function(req, res) {
 // get suppliers
 server.get('/api/supplier', function(req, res) {
 	console.log('sending suppliers');
-	Supplier.getSuppliers(function (error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.json(emp);
-	})
+	cache.get("supplier", function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			Supplier.getSuppliers(function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					cache.set("supplier", JSON.stringify(emp));
+					res.json(emp);
+				}
+			});
+		}
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
-// get stock change by id
+// get supplier by id
 server.get('/api/supplier/:_id', function(req, res) {
 	var id = req.params._id;
-
-	Supplier.findSupplierById(id, function (error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.json(emp);
-	})
+	cache.get("supplier:" + id, function(err, rep) {
+		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		else if(isEmpty(rep)) {
+			Supplier.findSupplierById(id, function (error, emp) {
+				if(error) res.status(400).send({ message: 'fail', error: error });
+				else {
+					cache.set("supplier:" + id, JSON.stringify(emp));
+					res.json(emp);
+				}
+			});
+		}
+		else {
+			res.json(JSON.parse(rep));
+		}
+	});
 });
 
-// add stock change
+// add supplier
 server.post('/api/supplier', function(req, res) {
 	console.log('adding supplier');
 	console.log(JSON.stringify(req.body, null, 4));
@@ -373,7 +532,10 @@ server.post('/api/supplier', function(req, res) {
 			console.log(error);
 			res.status(400).send({ message: 'fail', error: error });
 		}
-		else res.json(emp);
+		else {
+			cache.del("supplier");
+			res.json(emp);
+		}
 	});
 });
 
@@ -383,11 +545,15 @@ server.delete('/api/supplier/:_id', function(req, res) {
 	console.log('deleting supplier ' + id);
 	Supplier.deleteSupplier(id, function(error, emp) {
 		if(error) res.status(400).send({ message: 'fail', error: error });
-		else res.status(200).send({message: 'ok'});
+		else {
+			cache.del("supplier");
+			cache.del("supplier:" + id);
+			res.status(200).send({message: 'ok'});
+		}
 	});
 });
 
-// update shop
+// update supplier
 server.put('/api/supplier/:_id', function(req, res) {
 	var id = req.params._id;
 	var jc = req.body;
@@ -402,6 +568,8 @@ server.put('/api/supplier/:_id', function(req, res) {
 		}
 		else {
 			console.log('updated');
+			cache.del("supplier");
+			cache.del("supplier:" + id);
 			res.json(emp);
 		}
 	});
