@@ -1,6 +1,80 @@
 <div class="panel panel-default" ng-init="getEmployee()">
     <div>
-        <h2>{{c.first_name}} {{c.last_name}}</h2>
+        <h2>{{e.fname}}</h2>
     </div>
+
+    <table class="table">
+        <tr>
+            <td rowspan=3>
+                <div class="centered">
+                    <img class="profpic" src='data:image/png;base64, {{e.photo}}' alt="aaa"/>
+                </div>
+            </td>
+            <td class="header">
+                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.firstname}} {{e.middlename}} {{e.lastname}}"></div> -->
+                <div class="pm"><div class="data-field">{{e.ffname}}</div></div>
+                <div class="em"><input class="form-control" required value="{{e.ffname}}"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!-- TODO calendar input? -->
+                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.birthdate}}"></div> -->
+                <div class="pm"><div class="data-field">{{e.birthdate}}</div></div>
+                <div class="em"><input class="form-control" required value="{{e.birthdate}}"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.hiredate}}"></div> -->
+                <div class="pm"><div class="data-field">{{e.hiredate}}</div></div>
+                <div class="em"><input class="form-control" required value="{{e.hiredate}}"></div>
+            </td>
+        </tr>
+
+        <th colspan=2><h4>Contact Info</h4></th>
+        <tr>
+            <td colspan=2>
+                <h5>Phone</h5>
+                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.phone}}"></div> -->
+                <div class="pm"><div class="data-field">{{e.phone}}</div></div>
+                <div class="em"><input class="form-control" required value="{{e.phone}}"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <h5>Email</h5>
+                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.email}}"></div> -->
+                <div class="pm"><div class="data-field">{{e.email}}</div></div>
+                <div class="em"><input class="form-control" required value="{{e.email}}"></div>
+            </td>
+        </tr>
+        <tr align="center">
+            <td>
+                <button class="btn pm" onclick="editmode()">Edit Profile</button>
+                <button class="btn btn-danger em" onclick="profilemode()">Cancel</button>
+            </td>
+            <td>
+                <button class="btn btn-danger pm" ng-click="deleteEmployee(e._id)">Delete Profile</button>
+                <button class="btn em" onclick="TODO">OK</button>
+            </td>
+        </tr>
+    </table>
+    <table class="table">
+        <tr><td colspan=6><h4> Hire History</h4></td></tr>
+        <tr ng-repeat="h in e.hirehistory" class="h.fireDate?'fired':''">
+            <td>{{h.title}}</td>
+            <td>{{h.salary}}</td>
+            <td>{{h.shopId}}</td>
+            <td>{{h.hiredate}}</td>
+            <td>{{h.fireDate}}</td>
+            <td>{{h.fireReason}}</td>
+        </tr>
+
+
+    </table>
+
+    <!-- <script>pm()</script> -->
+
 
 </div>

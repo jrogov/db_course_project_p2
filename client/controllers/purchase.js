@@ -1,6 +1,6 @@
-var fiveyApp = angular.module('fiveyApp')
+var myApp = angular.module('myApp')
 
-fiveyApp.controller('PurchaseController', 
+myApp.controller('PurchaseController', 
     [ 
         '$scope', 
         '$http', 

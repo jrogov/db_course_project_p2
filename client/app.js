@@ -1,6 +1,12 @@
-var fiveyApp = angular.module('fiveyApp', ['ngRoute']);
+var myApp = angular.module('myApp', ['ngRoute']);
 
-fiveyApp.config(['$routeProvider', function($routeProvider) {
+var apiurl = 'http://localhost:3228/api'
+
+myApp.config(
+    ['$routeProvider',
+    function($routeProvider) {
+    console.log('Routing config loaded ('+new Date()+')');
+
     $routeProvider
         .when('/', {
             templateUrl: 'views/home.html'
@@ -96,4 +102,6 @@ fiveyApp.config(['$routeProvider', function($routeProvider) {
             redirectTo: '/home'
         });
 
-}]);
+    }
+    ]
+);

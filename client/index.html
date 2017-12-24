@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="fiveyApp">
+<html ng-app="myApp">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,31 +12,35 @@
     <link rel="stylesheet" href="css/style.css">
 
     <!-- Angular -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-route.js"></script>
 
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.js"></script> -->
+
+    <!-- Helper functions -->
+    <script src="js/common.js"></script>
 
     <!-- Routes -->
     <script src="app.js"></script>
 
     <!-- Controllers -->
-    <script src="employee.js"></script>
-    <script src="product.js"></script>
-    <script src="purchase.js"></script>
-    <script src="shop.js"></script>
-    <script src="stockchange.js"></script>
-    <script src="supplier.js"></script>
-    <script src="database.js"></script>
+    <script src="controllers/employee.js"></script>
+    <!-- <script src="./controllers/product.js"></script> -->
+    <!-- <script src="./controllers/purchase.js"></script> -->
+    <!-- <script src="./controllers/shop.js"></script> -->
+    <!-- <script src="./controllers/stockchange.js"></script> -->
+    <!-- <script src="./controllers/supplier.js"></script> -->
+    <!-- <script src="./controllers/database.js"></script> -->
 
 
-    <title>Fivey Store</title>
 
-    <style>
-    body {
-        background-color: #c7b39b; /* Цвет фона */
-    }
+    <title>Sample Store</title>
 
-</style>
 </head>
 
 <body>

@@ -1,0 +1,48 @@
+body{
+    background-color: #c7b39b;
+}
+
+tr[ng-click] {
+    cursor: pointer;
+}
+
+tr[ng-click]:hover {
+    background-color: #9baec6;
+}
+
+.pm{
+    display:block;
+}
+
+.em{
+    display:none;
+}
+
+/* copypaste from bootstraps form-control*/
+.data-field {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    background-color: #c7b39b;
+    border: 1px;
+    color: black;
+}
+
+div.centered{
+    display: flex;
+    align-items:center;
+    justify-content:center;
+
+    /*width: 100%;*/
+    /*height: 100%;*/
+}
+.profpic {
+    /*object-fit: cover;*/
+    /*width: 40%;*/
+    /*height: 40%;*/
+
+    width: 50%;
+    height: 50%;
+}

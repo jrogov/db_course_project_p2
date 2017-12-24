@@ -1,5 +1,30 @@
-<div class="inner_container">
+<div class="inner_container" ng-init="getEmployees()">
     <div>
-        Here's some cool placeholder text FOR EMPLOYEES ONLY
+        <table class="table">
+            <tr><button class="btn">Add Employee</button></tr>
+            <!-- <tr>/SEARCHBAR HERE/</tr> -->
+
+            <!-- <div> -->
+            <!-- <a class="btn-block" display:block href="smthsmth"> -->
+            <tr ng-repeat="e in employees" ng-click=profile(e._id)>
+                <td><img src='data:image/png;base64, {{e.photo}}'/></td>
+
+                <!-- <td>{{e.photo.data}}</td> -->
+                <td>{{e.firstname}} {{e.middlename}} {{e.lastname}}</td>
+                <td>Hired on {{e.hiredate}}</td>
+            </tr>
+            <!-- </a> -->
+            <!-- </div> -->
+
+            <!-- <div ng-repeat="e in employee">
+                <tr>
+                    <td colspan=1>{{e.photo}}</td>
+                    <td>{{e.firstname}} {{e.middlename}} {{e.lastname}}</td>
+                </tr>
+                <tr>
+                    <td>Hired on {{e.hiredate}}</td>
+                </tr>
+            </div> -->
+        </table>
     </div>
 </div>
