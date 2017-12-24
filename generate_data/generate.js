@@ -118,7 +118,6 @@ var sup_ids = [];
 var emp_hiredates = [];
 
 
-
 function generate(){
 
     console.log("Starting generation");
@@ -146,6 +145,30 @@ function generate(){
                 var birthdate = datePlusDays(gdate, -rand_int(7000, 25000))
                 var firstname = rand_elem(names);
 
+                var hh_length = rand_int(1, max_hirehistory_length);
+                var a_days = 0;
+                var b_days = trunc( (gdate.getTime()- first_hire_date.getTime())/MILLISINDAY );
+
+                hirings = []
+                for(j=1; j<=hh_length; j++){
+                    var contract_id = []
+
+                    hiring = {
+                        title    : rand_elem(job_titles),
+                        salary   : rand_int(1,100) * 100,
+                        shopId   : rand_elem(shop_ids),
+                        hiredate : datePlusDays(first_hire_date, a_days)
+                    };
+                    // add some days
+                    a_days = rand_int(a_days+1, b_days);
+                    absolutely_fired = (random() < 0.1);
+
+                    hiring['fireDate']   = datePlusDays(first_hire_date, a_days);
+                    hiring['fireReason'] = rand_elem(absolutely_fired?fatal_fire_reasons:fire_reason);
+                    hirings.push(hiring);
+                    if(absolutely_fired) break;
+                }
+
                 return {
                     lastname   : rand_elem(lastnames),
                     firstname  : firstname,
@@ -155,12 +178,7 @@ function generate(){
                     photo      : rand_elem(images).toString('base64'),
                     phone      : rand_phone(),
                     email      : firstname+birthdate.getYear()+'@'+rand_elem(domains),
-                    hirehistory: [{
-                        title    : rand_elem(job_titles),
-                        salary   : rand_int(1,100) * 100,
-                        shopId   : rand_elem(shop_ids),
-                        hiredate : datePlusDays(gdate, -rand_int(7000,16000))
-                    }]
+                    hirehistory: hirings
                 }
             })
 
@@ -169,6 +187,8 @@ function generate(){
     (err, res) => {
         if(err) return console.log(err.message);
         console.log('Generating suppliers');
+
+
 
         suppliers = supplier_names.map(
             sname => {
