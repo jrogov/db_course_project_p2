@@ -20,6 +20,8 @@ myApp.controller('EmployeeController',
                 mn = employee.middlename
                 employee['ffname'] = employee.firstname + ' '+(mn?mn+' ':'') + employee.lastname;
                 $scope.e = employee;
+                // Default values for fields
+                $scope.u = employee;
             }
             , err => { console.log(err); }
             );
@@ -36,7 +38,7 @@ myApp.controller('EmployeeController',
             );
         };
 
-        $scope.profile = function(id){
+        $scope.openEmployeeProfile = function(id){
             $location.url('/employees/'+id);
             console.log(id);
         }
@@ -49,11 +51,17 @@ myApp.controller('EmployeeController',
 
         $scope.updateEmployee = function(){
             /*TODO*/
-        }
+            console.log("Update!");
+            console.log($scope.u);
+            $http.put(
+                apiurl+'/employee/'+$scope.e._id,
+                $scope.u
+            ).then(
+                a => {
+                    $window.location.reload(); }
+                );
 
-        // $scope. = function(){
-        //     $http.
-        // }
+        }
     }
 ]
 );

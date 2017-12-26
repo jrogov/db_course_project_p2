@@ -5,30 +5,31 @@
 
     <table class="table">
         <tr>
-            <td rowspan=3>
+            <td rowspan="3">
                 <div class="centered">
-                    <img class="profpic" src='data:image/png;base64, {{e.photo}}' alt="aaa"/>
+                    <img class="profpic" src='data:image/png;base64, {{e.photo}}' alt="{{e.ename}}"/>
                 </div>
             </td>
             <td class="header">
-                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.firstname}} {{e.middlename}} {{e.lastname}}"></div> -->
                 <div class="pm"><div class="data-field">{{e.ffname}}</div></div>
-                <div class="em"><input class="form-control" required value="{{e.ffname}}"></div>
+                <div class="em">
+                    <input ng-model="u.firstname" class="form-control" required value="{{e.firstname}}">
+                    <input ng-model="u.middlename" class="form-control" required value="{{e.middlename}}">
+                    <input ng-model="u.lastname" class="form-control" required value="{{e.lastname}}">
+                </div>
             </td>
         </tr>
         <tr>
             <td>
-                <!-- TODO calendar input? -->
-                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.birthdate}}"></div> -->
+                <!-- TODO data input -->
                 <div class="pm"><div class="data-field">{{e.birthdate}}</div></div>
-                <div class="em"><input class="form-control" required value="{{e.birthdate}}"></div>
+                <div class="em"><input ng-model="u.birthdate" class="form-control" required value="{{e.birthdate}}"></div>
             </td>
         </tr>
         <tr>
             <td>
-                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.hiredate}}"></div> -->
                 <div class="pm"><div class="data-field">{{e.hiredate}}</div></div>
-                <div class="em"><input class="form-control" required value="{{e.hiredate}}"></div>
+                <div class="em"><input ng-model="u.hiredate" class="form-control" required value="{{e.hiredate}}"></div>
             </td>
         </tr>
 
@@ -36,17 +37,15 @@
         <tr>
             <td colspan=2>
                 <h5>Phone</h5>
-                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.phone}}"></div> -->
                 <div class="pm"><div class="data-field">{{e.phone}}</div></div>
-                <div class="em"><input class="form-control" required value="{{e.phone}}"></div>
+                <div class="em"><input ng-model="u.phone" class="form-control" required value="{{e.phone}}"></div>
             </td>
         </tr>
         <tr>
             <td colspan=2>
                 <h5>Email</h5>
-                <!-- <div class="pm"><input class="data-field" disabled required value="{{e.email}}"></div> -->
                 <div class="pm"><div class="data-field">{{e.email}}</div></div>
-                <div class="em"><input class="form-control" required value="{{e.email}}"></div>
+                <div class="em"><input ng-model="u.email" class="form-control" required value="{{e.email}}"></div>
             </td>
         </tr>
         <tr align="center">
@@ -56,7 +55,7 @@
             </td>
             <td>
                 <button class="btn btn-danger pm" ng-click="deleteEmployee(e._id)">Delete Profile</button>
-                <button class="btn em" onclick="TODO">OK</button>
+                <button class="btn em" ng-click="updateEmployee()">OK</button>
             </td>
         </tr>
     </table>
