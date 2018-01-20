@@ -1,0 +1,69 @@
+<div class="panel panel-default">
+    <div>
+        <h2>{{e.fname}}</h2>
+    </div>
+
+    <script type="text/javascript">
+    $(function() {
+         $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
+    });
+    </script>
+
+    <table class="table">
+        <tr colspan=3>
+            <!-- <td rowspan="3"> -->
+                <!-- <img class="profpic" src='data:image/png;base64, {{e.photo}}' alt="{{e.ename}}"/> -->
+                <!-- </div> -->
+                <!-- <div class=""> -->
+                    <!-- TODO: image upload -->
+                    <!-- <input type="file" onchange="previewFile()"><br> -->
+                    <!-- <img src="" height="200" alt="Image preview..."> -->
+                <!-- </div> -->
+            <!-- </td> -->
+            <td class="header">
+                <div class="">
+                    <input placeholder="First Name" ng-model="e.firstname" class="form-control" required>
+                    <input placeholder="Middle Name" ng-model="e.middlename" class="form-control" required>
+                    <input placeholder="Last Name" ng-model="e.lastname" class="form-control" required>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Born
+                <!-- TODO data input -->
+                <div class=""><input ng-model="e.birthdate" class="form-control show-calendar" required></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Hired
+                <div class=""><input ng-model="e.hiredate" class="form-control show-calendar" required type="text"></div>
+            </td>
+        </tr>
+
+        <th colspan=2><h4>Contact Info</h4></th>
+        <tr>
+            <td colspan=2>
+                <h5>Phone</h5>
+                <div class=""><input ng-model="e.phone" class="form-control" required></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <h5>Email</h5>
+                <div class=""><input ng-model="e.email" class="form-control" required></div>
+            </td>
+        </tr>
+        <tr align="center">
+            <td colspan=3>
+                <p id="error" ng-model="error" class="text-danger">No</p>
+            </td>
+        </tr>
+        <tr align="center">
+            <td colspan=2>
+                <button class="btn" ng-click="addEmployee()">Add Employee</button>
+            </td>
+        </tr>
+    </table>
+</div>

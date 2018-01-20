@@ -1,8 +1,18 @@
 <div class="inner_container" ng-init="getEmployees()">
     <div>
         <table class="table">
-            <tr><td colspan=3>/TODO SEARCHBAR HERE/<td></tr>
-            <tr><td colspan=3><button class="btn">Add Employee</button></td></tr>
+
+<!--
+            <tr><td colspan=3>
+                <h3>Search</h3>
+                <input ng-model="searchparams"
+                ng-model-options="{ debounce: 1000 }"
+                class="form-control" required>
+            <td></tr>
+            <tr><td></td><td><button class="btn" ng-click="searchEmployees()">Search</button></td><td></td></tr>
+ -->
+
+            <tr><td colspan=3><button class="btn" ng-click="openAddEmployee()">Add Employee</button></td></tr>
 
             <!-- <a class="btn-block" display:block href="smthsmth"> -->
 

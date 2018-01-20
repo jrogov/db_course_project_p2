@@ -3,52 +3,84 @@
         <h2>{{e.fname}}</h2>
     </div>
 
+    <script type="text/javascript">
+    $(function() {
+         $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
+    });
+
+    function put_photo(path, id){
+        console.log(path);
+        console.log(id);
+        var reader = new FileReader();
+        reader.onload = function(){
+            var text = reader.result;
+            node = document.getElementById(id);
+            node.style['display']='block';
+            node.src='aaaa';
+        }
+        reader.readAsBinaryString(path);
+    }
+
+    </script>
+
     <table class="table">
         <tr>
             <td rowspan="3">
-                <div class="centered">
+                <div class="pm centered">
                     <img class="profpic" src='data:image/png;base64, {{e.photo}}' alt="{{e.ename}}"/>
                 </div>
+                <!-- <div class="em"> -->
+                    <!-- Apparently, you can't just read file to string and send it along form -->
+                    <!-- So, there should be a workaround? -->
+                        <!-- <input type="file" id="logo" onchange="document.getElementById('load_pic_form').submit()"> -->
+                        <!-- <input type="file" id="logo"> -->
+
+                    <!-- <img id="loaded_profpic" class="profpic" src='data:image/png;base64, {{e.photo}}' alt="{{e.ename}}"/> -->
+
+                <!-- </div> -->
             </td>
             <td class="header">
                 <div class="pm"><div class="data-field">{{e.ffname}}</div></div>
                 <div class="em">
-                    <input ng-model="u.firstname" class="form-control" required value="{{e.firstname}}">
-                    <input ng-model="u.middlename" class="form-control" required value="{{e.middlename}}">
-                    <input ng-model="u.lastname" class="form-control" required value="{{e.lastname}}">
+                    <input placeholder="First Name" ng-model="e.firstname" class="form-control" required>
+                    <input placeholder="Middle Name" ng-model="e.middlename" class="form-control" required>
+                    <input placeholder="Last Name" ng-model="e.lastname" class="form-control" required>
                 </div>
             </td>
         </tr>
         <tr>
             <td>
+                Born
                 <!-- TODO data input -->
                 <div class="pm"><div class="data-field">{{e.birthdate}}</div></div>
-                <div class="em"><input ng-model="u.birthdate" class="form-control" required value="{{e.birthdate}}"></div>
+                <div class="em"><input ng-model="e.birthdate" class="form-control show-calendar date-format" required></div>
             </td>
         </tr>
         <tr>
             <td>
+                Hired
                 <div class="pm"><div class="data-field">{{e.hiredate}}</div></div>
-                <div class="em"><input ng-model="u.hiredate" class="form-control" required value="{{e.hiredate}}"></div>
+                <div class="em"><input ng-model="e.hiredate" class="form-control show-calendar date-format" required type="text"></div>
+                <div class="em"><input class="form-control date-format" required type="text" data-mask="00/00/0000" data-mask-selectonfocus="true"></div>
             </td>
         </tr>
 
-        <th colspan=2><h4>Contact Info</h4></th>
+        <tr class="no-borders"> <th><h4>Contact Info</h4></th></tr>
         <tr>
             <td colspan=2>
                 <h5>Phone</h5>
                 <div class="pm"><div class="data-field">{{e.phone}}</div></div>
-                <div class="em"><input ng-model="u.phone" class="form-control" required value="{{e.phone}}"></div>
+                <div class="em"><input ng-model="e.phone" class="form-control" required></div>
             </td>
         </tr>
         <tr>
             <td colspan=2>
                 <h5>Email</h5>
                 <div class="pm"><div class="data-field">{{e.email}}</div></div>
-                <div class="em"><input ng-model="u.email" class="form-control" required value="{{e.email}}"></div>
+                <div class="em"><input ng-model="e.email" class="form-control" required></div>
             </td>
         </tr>
-        <tr align="center">
+        <tr class="no-borders" align="center">
             <td>
                 <button class="btn pm" onclick="editmode()">Edit Profile</button>
                 <button class="btn btn-danger em" onclick="profilemode()">Cancel</button>
@@ -59,20 +91,53 @@
             </td>
         </tr>
     </table>
+
+
     <table class="table">
-        <tr><td colspan=6><h4> Hire History</h4></td></tr>
+        <!-- TODO -->
+        <!--
+        <tr><tr colspan=6><h4>Hire</h4></td></tr>
+        <tr>
+            <th class='table-column table-text'>Job Title</th>
+            <th class='table-column table-numeric'>Salary</th>
+            <th class='table-column table-text'>ShopId</th>
+            <th class='table-column table-date'>Hire Date</th>
+            <th class='table-column table-date'>Fire Date</th>
+            <th class='table-column table-text'>Fire Reason</th>
+        </tr>
+        <tr>
+           <td><input class="form-control" ng-model="h.title" required></td>
+           <td><input class="form-control" ng-model="h.salary" required></td>
+           <td><input class="form-control" ng-model="h.shopId" required></td>
+           <td><input class="form-control" ng-model="h.hiredate" required></td>
+           <td><input class="form-control" ng-model="h.fireDate" required></td>
+           <td><input class="form-control" ng-model="h.fireReason" required></td>
+        </tr>
+    -->
+
+        <tr class="no-borders"><td colspan=6><h4>Hire History</h4></td></tr>
+        <tr>
+
+            <th class='table-column table-text'>Title</th>
+            <th class='table-column table-numeric'>Salary</th>
+            <th class='table-column table-text'>ShopId</th>
+            <th class='table-column table-date'>Hire Date</th>
+            <th class='table-column table-date'>Fire Date</th>
+            <th class='table-column table-text'>Fire Reason</th>
+        </tr>
         <tr ng-repeat="h in e.hirehistory" class="h.fireDate?'fired':''">
-            <td>{{h.title}}</td>
-            <td>{{h.salary}}</td>
-            <td>{{h.shopId}}</td>
-            <td>{{h.hiredate}}</td>
-            <td>{{h.fireDate}}</td>
-            <td>{{h.fireReason}}</td>
+            <td class='table-column table-text'>{{h.title}}</td>
+            <td class='table-column table-numeric'>{{h.salary}}</td>
+            <td class='table-column table-text'>{{h.shopId}}</td>
+            <td class='table-column table-date'>{{h.hiredate}}</td>
+            <td class='table-column table-date'>{{h.fireDate}}</td>
+            <td class='table-column table-text'>{{h.fireReason}}</td>
         </tr>
 
 
     </table>
 
+    <script>restrict_date_input()</script>
     <!-- <script>pm()</script> -->
 
 

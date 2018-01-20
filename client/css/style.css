@@ -30,6 +30,24 @@ tr[ng-click]:hover {
     color: black;
 }
 
+.table-column.table-numeric {
+    text-align: right;
+    padding-right: 5%;
+}
+
+.table-column.table-text {
+    text-align: left;
+}
+
+.table-column.table-date {
+    text-align: right;
+    padding-right: 5%;
+}
+
+tr.no-borders td, tr.no-borders th {
+    border: none;
+}
+
 div.centered{
     display: flex;
     align-items:center;

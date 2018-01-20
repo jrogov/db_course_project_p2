@@ -23,6 +23,11 @@ myApp.config(
             templateUrl: 'views/employees.html'
         })
 
+        .when('/employees/add', {
+            controller: 'EmployeeController',
+            templateUrl: 'views/employee_add.html'
+        })
+
         .when('/employees/:id', {
             controller: 'EmployeeController',
             templateUrl: 'views/employee_profile.html'
