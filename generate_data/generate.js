@@ -278,7 +278,7 @@ function generate(){
     //         if(absolutely_fired) break;
     //     }
 
-mongoose.connect('mongodb://localhost:27017/fiveydb');
+mongoose.connect('mongodb://localhost:27017/test');
 
 var db = mongoose.connection;
 db.on('error', function() { console.log("Connection error!"); });
