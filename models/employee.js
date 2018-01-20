@@ -108,8 +108,15 @@ var Employee = module.exports = mongoose.model('Employee', employeeSchema, colle
 // =============================================================================
 
 
-module.exports.getEmployees = function(callback){
-	Employee.find({}, callback)
+module.exports.getEmployees = function(callback, short){
+	var projection = new Object();
+	if( short ) {
+		projection.hirehistory = 0;
+		projection.birthdate = 0;
+		projection.phone = 0;
+		projection.email = 0;
+	}
+	Employee.find({}, projection, callback)
 };
 
 
@@ -129,7 +136,9 @@ module.exports.updateEmployee = function(id, people, options, callback){
 		firstname  : people.firstname,
 		middlename : people.middlename,
 		phone      : people.phone,
-		email      : people.email
+		email      : people.email,
+		birthdate  : people.birthdate,
+		hiredate   : people.hiredate
 	};
 	Employee.findByIdAndUpdate(id, update, options, callback);
 }
