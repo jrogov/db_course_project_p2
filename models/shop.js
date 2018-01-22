@@ -20,6 +20,9 @@ var shopSchema = mongoose.Schema({
 			validator: v => /^8[0-9]{10}$/.test(v),
 			message: 'Invalid phone number' }
 	}
+},
+{
+	minimize: false,
 });
 
 var Shop  = module.exports = mongoose.model('Shop', shopSchema, collectionName);
@@ -36,6 +39,10 @@ module.exports.addShop = function(shop, callback){
 module.exports.getShops = function(callback){
 	Shop.find(callback);
 }
+
+module.exports.findShopById = function(id, callback){
+	Shop.findById(id, callback);
+};
 
 module.exports.updateShop = function(id, shop, option, callback){
 	var update = {
