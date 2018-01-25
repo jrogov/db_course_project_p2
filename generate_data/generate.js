@@ -14,13 +14,10 @@ function(filename) {return path.join(images_dir_path, filename);
 function(filename) {return fs.statSync(filename).isFile();
 });
 
-var images =
-filenames.map(
-    function(filename) {return fs.readFileSync(filename);
+var images = filenames.map(
+        function(filename) {return fs.readFileSync(filename).toString('base64');
     });
-    // }).map(
-    //     function(filename) {return filename.toString('base64');
-    // });
+
 
     var cities         = [ 'Naples', 'Rome', 'Milan', 'Turin', 'Palermo', 'Genoa', 'Bologna', 'Tokyo', 'Setagaya', 'Nerima', 'Edogawa', 'Adachi', 'Kagoshima', 'Funabashi', 'Himeji', 'Suginami' ];
     var streets        = [ 'Tenjin', 'Nakasu', 'Kamiyacho', 'Hacchobori', 'Hondori Street', 'Harborland', 'Nankinmachi', 'Motomachi', 'Sannomiya', 'around Shijo Street', 'Pontocho', 'Shin-Kyogoku Street', 'Meieki', 'Sakae', 'Kanayama', 'Via Cavour', 'Via della Conciliazione',  'Via del Corso',  'Via dei Fori Imperiali',  'Via Giulia',  'Via Margutta',  'Via Nazionale',  'Via' ];
@@ -37,18 +34,17 @@ filenames.map(
     var fatal_fire_reasons = [ 'Damaging Company Property', 'Drug or Alcohol Possession at Work', 'Falsifying Company Records', 'Insubordination', 'Misconduct', 'Poor Performance', 'Stealing', 'Using Company Property for Personal Business', 'Taking Too Much Time Off', 'Violating Company Policy' ];
 
 
-    function padWithZeroes( number, width )
-    {
+function padWithZeroes( number, width ){
       width = width + 1 - number.toString().length;
       var a = new Array(width).join('0')+''+number;
       return a;
-  }
+}
 
-  var trunc = Math.trunc;
-  var random = Math.random;
+var trunc = Math.trunc;
+var random = Math.random;
 
 
-  function rand_int(a, b){
+function rand_int(a, b){
     return trunc(a+(b-a+1)*random());
 }
 
@@ -60,8 +56,11 @@ function rand_address(){
     return rand_int(1,300) + ' ' + rand_elem(streets) + ', ' + rand_elem(cities);
 }
 
+// '8'+s.match(/-(.*)$/)[1].replace(/-/g,'')
 function rand_phone(){
-    return ''+'8'+padWithZeroes(rand_int(0,9999999999), 10);
+    country_code = rand_int(0,999)
+    num = padWithZeroes(rand_int(0,9999999999), 10);
+    return '+'+country_code+'-'+num.slice(0,3)+'-'+num.slice(3,6)+'-'+num.slice(6,10)
 }
 
 function range(a, b){
@@ -95,19 +94,6 @@ stockChanges_num = 50;
 max_products_per_stockchange = 10;
 max_products_count_per_sc = 10;
 
-// function factory
-function record_id_ff(array){
-    return (err, entity) => {
-        console.log(err);
-        console.log(entity);
-        if(err) console.log(err.message);
-        else array.push(entity._id);
-    }
-}
-
-var logcallback = function(err, entity){ console.log(err, entity)};
-var emptycallback = function(a, b){};
-
 function sleep (time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
@@ -118,7 +104,7 @@ var sup_ids = [];
 var emp_hiredates = [];
 
 
-function generate(){
+function generate(callback){
 
     console.log("Starting generation");
 
@@ -175,7 +161,7 @@ function generate(){
                     middlename : rand_elem(names),
                     birthdate  : birthdate,
                     hiredate   : first_hire_date,
-                    photo      : rand_elem(images).toString('base64'),
+                    photo      : rand_elem(images),
                     phone      : rand_phone(),
                     email      : firstname+birthdate.getYear()+'@'+rand_elem(domains),
                     hirehistory: hirings
@@ -188,7 +174,7 @@ function generate(){
         if(err) return console.log(err.message);
         console.log('Generating suppliers');
 
-
+        emp_ids = res.map( v => v._id );
 
         suppliers = supplier_names.map(
             sname => {
@@ -224,59 +210,68 @@ function generate(){
         (err, res) => {
         if(err) return console.log(err.message);
 
-                                    //smth
+        prod_ids = res.map( v => v._id );
 
-    // async right?
-})})})})};
+        console.log('Generating purchases');
+
+        purchases = range(0, purchases_num).map(
+                () => {
+                    return {
+                        shopid: rand_elem(shop_ids),
+                        cassierid: rand_elem(emp_ids),
+                        purchasedate: datePlusDays(gdate, -rand_int(1825, 3650)),
+                        items:
+                            // range(1, 1+rand_int(0, product_per_purchases_max)).map(
+                            range(1, 2).map(
+                                () => {
+                                    return {
+                                        productId: rand_elem(prod_ids),
+                                        count: rand_int(1,max_products_per_purchase)
+                                    }
+                                }
+                            )
+                    }
+                }
+            );
+    console.log('Adding purchases to database');
+    Purchase.addPurchase(purchases,
+        (err, res) => {
+        if(err) return console.log(err.message);
+
+        console.log('Generating Stock Changes');
+
+        stockchanges = range(0, stockChanges_num).map(
+            () => {
+                arr_date = datePlusDays(gdate, -rand_int(1825, 3650))
+                return {
+                    shopid: rand_elem(shop_ids),
+                    arrivaldate: arr_date,
+                    items: range(0, 50).map(
+                        () => {
+                            return {
+                                productid: rand_elem(prod_ids),
+                                count: rand_int(1, max_products_count_per_sc),
+                                manufactureDate: datePlusDays(arr_date, -rand_int(1, 60))
+                            }
+                        }
+                    )
+                }
+            }
+        )
+
+    console.log('Adding Stock Changes to database');
+    StockChange.addStockChange(stockchanges,
+        (err, res) => {
+        if(err) return console.log(err.message);
+
+        callback()
 
 
-    // (err, res) => {
-
-    //     if(err) return console.log(err.message);
-
-    //     console.log('Generating suppliers');
-
-    // console.log('Adding suppliers to database');
-
-
-
-
-
-    // // EMPLOYEE HIRINGS
-    // for(i=0; i<emp_num; i++){
-    //     var empid = emp_ids[i];
-    //     var first_hire_date = emp_hiredates[i];
-
-    //     var hh_length = rand_int(1, max_hirehistory_length);
-    //     var a_days = 0;
-    //     var aaaaa = gdate.getTime();
-    //     // console.log(trunc( (gdate.getTime()- first_hire_date.getTime())/MILLISINDAY ) );
-    //     var b_days = trunc( (aaaaa- first_hire_date.getTime())/MILLISINDAY );
-
-    //     for(j=1; j<=hh_length; j++){
-    //         var contract_id = []
-
-    //         Employee.hireEmployee(empid, {
-    //             title    : rand_elem(job_titles),
-    //             salary   : rand_int(1,100) * 100,
-    //             shopId   : rand_elem(shop_ids),
-    //             hiredate : datePlusDays(first_hire_date, a_days)
-    //         }, record_id_ff(contract_id));
-
-    //         contract_id = contract_id[0];
-
-    //         // add some days
-    //         a_days = rand_int(a_days+1, b_days);
-
-    //         absolutely_fired = (random() < 0.1);
-    //         fire_reason = rand_elem(absolutely_fired?fatal_fire_reasons:fire_reason);
-    //         Employee.fireEmployee(contract_id, {
-    //             date   : datePlusDays(first_hire_date, a_days),
-    //             reason : fire_reason
-    //         }, null);
-
-    //         if(absolutely_fired) break;
-    //     }
+// they told async is cool
+// they told async is hip
+// even though it is manure
+// even though it is not real
+})})})})})})};
 
 mongoose.connect('mongodb://localhost:27017/test');
 
@@ -284,5 +279,8 @@ var db = mongoose.connection;
 db.on('error', function() { console.log("Connection error!"); });
 db.once('open', function() {
     console.log("Connected to db.");
-    generate();
+    generate( () => {
+        db.close();
+        process.exit();
+    });
 });
