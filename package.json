@@ -6,7 +6,8 @@
   "dependencies": {
     "angular": "^1.6.7",
     "express": "^4.16.2",
-    "mongoose": "^4.13.7",
+    // "jquery-mask-plugin": "^1.14.13",
+    "mongoose": "^4.13.8",
     "redis": "^2.8.0"
   },
   "devDependencies": {},
