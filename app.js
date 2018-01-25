@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var mongoose = require("mongoose");
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -13,6 +15,9 @@ StockChange = require('./models/stockchange');
 Supplier = require('./models/supplier');
 
 mongoose.connect('mongodb://localhost:27017/test');
+
+console.log('App starts!');
+console.log('Using mongoose. Version: ' + mongoose.version);
 
 var db = mongoose.connection;
 db.on('error', function() { console.log("Connection error!"); });
@@ -41,17 +46,20 @@ function isEmpty(obj)
 // get employees
 server.get('/api/employee', function(req, res) {
 	console.log('sending employees');
-	cache.get("employee", function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+	cache.get("employees", function(err, rep) {
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
+		// for( i in rep) console.log(rep[i]['_id']);
 		else if(isEmpty(rep)) {
 			console.log("did not find in cache, querying db");
 			Employee.getEmployees(function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
-					cache.set("employee", JSON.stringify(emp));
+					cache.set("employees", JSON.stringify(emp));
 				}
-			});
+			}, true);
 		}
 		else {
 			console.log("found in cache");
@@ -64,21 +72,29 @@ server.get('/api/employee', function(req, res) {
 server.get('/api/employee/:_id', function(req, res) {
 	var id = req.params._id;
 
-	cache.get("employee:" + id), function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+	console.log('/api/employee/'+id);
+
+	cache.get("employee:" + id, function(err, rep) {
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			Employee.findEmployeeById(id, function (error, emp) {
-			if(error) res.status(400).send({ message: 'fail', error: error });
-			else {
-				res.json(emp);
-				cache.set("employee:"+id, JSON.stringify(emp));
-			}
-		});
-	}
-	else {
-		console.log("found in cache");
-		res.json(JSON.parse(rep));
-	}
+				console.log("did not find in cache, querying db");
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
+				else {
+					console.log('Sending data');
+					res.json(emp);
+					console.log('Caching data');
+					cache.set("employee:"+id, JSON.stringify(emp));
+				}
+			}, true);
+		}
+		else {
+			console.log("found in cache");
+			res.json(JSON.parse(rep));
+		}
+	})
 });
 
 // update employee
@@ -92,7 +108,8 @@ server.put('/api/employee/:_id', function(req, res) {
 	Employee.updateEmployee(id, emp, {}, function(error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			console.log('updated');
@@ -109,7 +126,8 @@ server.post('/api/employee', function(req, res) {
 	Employee.addEmployees(req.body, function(error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			res.json(emp);
@@ -122,7 +140,8 @@ server.post('/api/employee', function(req, res) {
 server.post('/api/hire/:_id', function(req, res) {
 	Employee.addHiring(req.params._id, req.body, function(error, emp) {
 		if(error) {
-			req.status(400).send({ error: 'failed to add hiring!' });
+			req.status(400).send(
+				{ error: 'failed to add hiring!' });
 		}
 		else {
 			res.json(emp);
@@ -136,9 +155,11 @@ server.post('/api/hire/:_id', function(req, res) {
 server.delete('/api/hire/:_id', function(req, res) {
 	var id = req.params._id;
 	Employee.removeEmployee(id, function(error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
+		if(error) res.status(400).send(
+			{ message: 'fail', error: error });
 		else {
-			res.status(200).send({message: 'ok'});
+			res.status(200).send(
+				{message: 'ok'});
 			cache.del("employee");
 			cache.del("employee:" + id);
 		}
@@ -150,12 +171,14 @@ server.delete('/api/employee/:_id', function(req, res) {
 	var id = req.params._id;
 	console.log('deleting employee ' + id);
 	Employee.removeEmployee(id, function(error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
+		if(error) res.status(400).send(
+			{ message: 'fail', error: error });
 		else {
-			res.status(200).send({message: 'ok'});
+			res.status(200).send(
+				{message: 'ok'});
 			cache.del("employee");
 			cache.del("employee:" + id);
-		} 
+		}
 	});
 });
 
@@ -164,11 +187,13 @@ server.delete('/api/employee/:_id', function(req, res) {
 server.get('/api/product', function(req, res) {
 	console.log('sending products');
 	cache.get("product", function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			Product.getProducts(function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
-				else { 
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
+				else {
 					res.json(emp);
 					cache.set("product", JSON.stringify(emp));
 				}
@@ -184,15 +209,17 @@ server.get('/api/product', function(req, res) {
 server.get('/api/product/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("product:" + id, function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			Product.findProductById(id, function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
 					cache.set("product:" + id, JSON.stringify(emp));
 				}
-			});
+			}, true);
 		}
 		else {
 			res.json(JSON.parse(rep));
@@ -207,7 +234,8 @@ server.post('/api/product', function(req, res) {
 	Product.addProduct(req.body, function(error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			res.json(emp);
@@ -227,7 +255,8 @@ server.put('/api/product/:_id', function(req, res) {
 	Product.updateProduct(id, jc, {}, function(error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			console.log('updated');
@@ -243,11 +272,13 @@ server.delete('/api/product/:_id', function(req, res) {
 	var id = req.params._id;
 	console.log('deleting product ' + id);
 	Product.removeProduct(id, function(error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
+		if(error) res.status(400).send(
+			{ message: 'fail', error: error });
 		else {
 			cache.del("product");
 			cache.del("product:" + id);
-			res.status(200).send({message: 'ok'});
+			res.status(200).send(
+				{message: 'ok'});
 		}
 	});
 });
@@ -257,16 +288,18 @@ server.delete('/api/product/:_id', function(req, res) {
 server.get('/api/purchase', function(req, res) {
 	console.log('sending purchases');
 	cache.get("purchase", function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep))
 		{
 			Purchase.getPurchases(function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
 					cache.set("purchase", JSON.stringify(emp));
 				}
-			});
+			}, true, true);
 		}
 		else {
 			res.json(JSON.parse(rep));
@@ -278,11 +311,13 @@ server.get('/api/purchase', function(req, res) {
 server.get('/api/purchase/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("purchase:" + id, function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep))
 		{
 			Purchase.findPurchaseById(id, function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
 					cache.set("purchase:" + id, JSON.stringify(emp));
@@ -302,7 +337,8 @@ server.post('/api/purchase', function(req, res) {
 	Purchase.addPurchase(req.body, function (error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			cache.del("purchase");
@@ -317,10 +353,12 @@ server.post('/api/purchase', function(req, res) {
 server.get('/api/shop', function(req, res) {
 	console.log('sending shops');
 	cache.get("shop", function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			Shop.getShops(function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
 					cache.set("shop", JSON.stringify(emp));
@@ -340,7 +378,8 @@ server.post('/api/shop', function(req, res) {
 	Shop.addShop(req.body, function (error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			cache.del("shop");
@@ -354,10 +393,12 @@ server.delete('/api/shop/:_id', function(req, res) {
 	var id = req.params._id;
 	console.log('deleting shop ' + id);
 	Shop.deleteShop(id, function(error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
+		if(error) res.status(400).send(
+			{ message: 'fail', error: error });
 		else {
 			cache.del("shop");
-			res.status(200).send({message: 'ok'});
+			res.status(200).send(
+				{message: 'ok'});
 		}
 	});
 });
@@ -373,7 +414,8 @@ server.put('/api/shop/:_id', function(req, res) {
 	Shop.updateShop(id, jc, {}, function(error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			console.log('updated');
@@ -388,15 +430,17 @@ server.put('/api/shop/:_id', function(req, res) {
 server.get('/api/stockchange', function(req, res) {
 	console.log('sending stock changes');
 	cache.get("stockchange", function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			StockChange.getStockChanges(function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					cache.set("stockchange", JSON.stringify(emp));
 					res.json(emp);
 				}
-			});
+			}, true, true);
 		}
 		else {
 			res.json(JSON.parse(rep));
@@ -408,15 +452,17 @@ server.get('/api/stockchange', function(req, res) {
 server.get('/api/stockchange/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("stockchange:" + id, function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			StockChange.findStockChangeById(id, function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					cache.set("stockchange:" + id, JSON.stringify(emp));
 					res.json(emp);
 				}
-			});
+			}, true);
 		}
 		else {
 			res.json(JSON.parse(rep));
@@ -431,7 +477,8 @@ server.post('/api/stockchange', function(req, res) {
 	StockChange.addStockChange(req.body, function (error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			cache.del("stockchange");
@@ -448,7 +495,8 @@ server.post('/api/stockchange/:_id/items', function(req, res) {
 	StockChange.addStockItems(id, req.body, function (error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			cache.del("stockchange");
@@ -469,7 +517,8 @@ server.put('/api/stockchange/:_id/items', function(req, res) {
 	StockChange.updateStockItems(id, jc, {}, function(error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			console.log('updated');
@@ -486,10 +535,12 @@ server.put('/api/stockchange/:_id/items', function(req, res) {
 server.get('/api/supplier', function(req, res) {
 	console.log('sending suppliers');
 	cache.get("supplier", function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			Supplier.getSuppliers(function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					cache.set("supplier", JSON.stringify(emp));
 					res.json(emp);
@@ -506,10 +557,12 @@ server.get('/api/supplier', function(req, res) {
 server.get('/api/supplier/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("supplier:" + id, function(err, rep) {
-		if(err) res.status(401).send({ message: 'cache fail', error: err} );
+		if(err) res.status(401).send(
+			{ message: 'cache fail', error: err} );
 		else if(isEmpty(rep)) {
 			Supplier.findSupplierById(id, function (error, emp) {
-				if(error) res.status(400).send({ message: 'fail', error: error });
+				if(error) res.status(400).send(
+					{ message: 'fail', error: error });
 				else {
 					cache.set("supplier:" + id, JSON.stringify(emp));
 					res.json(emp);
@@ -530,7 +583,8 @@ server.post('/api/supplier', function(req, res) {
 	Supplier.addSupplier(req.body, function (error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			cache.del("supplier");
@@ -544,11 +598,13 @@ server.delete('/api/supplier/:_id', function(req, res) {
 	var id = req.params._id;
 	console.log('deleting supplier ' + id);
 	Supplier.deleteSupplier(id, function(error, emp) {
-		if(error) res.status(400).send({ message: 'fail', error: error });
+		if(error) res.status(400).send(
+			{ message: 'fail', error: error });
 		else {
 			cache.del("supplier");
 			cache.del("supplier:" + id);
-			res.status(200).send({message: 'ok'});
+			res.status(200).send(
+				{message: 'ok'});
 		}
 	});
 });
@@ -564,7 +620,8 @@ server.put('/api/supplier/:_id', function(req, res) {
 	Supplier.updateSupplier(id, jc, {}, function(error, emp) {
 		if(error) {
 			console.log(error);
-			res.status(400).send({ message: 'fail', error: error });
+			res.status(400).send(
+				{ message: 'fail', error: error });
 		}
 		else {
 			console.log('updated');
