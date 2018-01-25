@@ -25,11 +25,12 @@ var stockItem = mongoose.Schema({
 var stockChangeSchema = mongoose.Schema({
 
 	shopid: {
-		type: Number,
+		type: ObjectId,
+		ref: 'Shop',
 		required: [ true, 'ShopId required' ]
 	},
 	arrivaldate: {
-		type: Number,
+		type: Date,
 		required: [ true, 'Arrival Date required' ]
 	},
 	items: [stockItem]
@@ -47,8 +48,21 @@ module.exports.addStockChange = function(stockchange, callback){
 }
 
 
-module.exports.getStockChanges = function(callback){
-	StockChange.find(callback);
+module.exports.getStockChanges = function(callback, short, populate){
+	var projection = new Object();
+
+	var pop = {
+		path: 'shopid'
+	}
+
+	if( short ){
+		projection.items = 0;
+	}
+
+	var p = StockChange.find({}, projection);
+	if(populate) p = p.populate(pop);
+	p.exec(callback);
+
 }
 
 
@@ -85,6 +99,16 @@ module.exports.updateStockItems = function(id, items_update, callback){
 	docQuery.exec(callback);
 }
 
-module.exports.findStockChangeById = function(id, callback){
-	StockChange.findById(id, callback);
+module.exports.findStockChangeById = function(id, callback, populate){
+	var pop = [{
+		path: 'shopid'
+	},
+	{
+		path: 'items.productid',
+		select: '_id name'
+	}]
+
+	var p = StockChange.findById(id);
+	if( populate ) p=p.populate(pop);
+	p.exec(callback);
 }

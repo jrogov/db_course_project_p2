@@ -5,11 +5,19 @@ var mongoose = require('mongoose');
 var shopSchema = mongoose.Schema({
 	name: {
 		type: String,
-		required: [true, 'Name required']
+		required: [true, 'Name required'],
+		validate: {
+			validator: v => /^.+$/.test(v),
+			message: 'Name can not be empty'
+		}
 	},
 	address: {
 		type: String,
-		required: [true, 'Address required']
+		required: [true, 'Address required'],
+		validate: {
+			validator: v => /^.+$/.test(v),
+			message: 'Address can not be empty'
+		}
 	},
 
 	phone: {
@@ -17,7 +25,7 @@ var shopSchema = mongoose.Schema({
 		required: [true, 'Phone number required'],
 		// unique: [true, 'Duplicate phone number found'],
 		validate: {
-			validator: v => /^8[0-9]{10}$/.test(v),
+			validator: v => /^(\+[0-9]{1,3}|8)-[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(v),
 			message: 'Invalid phone number' }
 	}
 },
@@ -44,11 +52,13 @@ module.exports.findShopById = function(id, callback){
 	Shop.findById(id, callback);
 };
 
-module.exports.updateShop = function(id, shop, option, callback){
+module.exports.updateShop = function(id, shop, options, callback){
 	var update = {
-		name    : shop.name,
-		address : shop.address,
-		phone   : shop.phone
+		$set: {
+			name    : shop.name,
+			address : shop.address,
+			phone   : shop.phone
+		}
 	};
 	Shop.findByIdAndUpdate(id, shop, options, callback);
 };

@@ -3,6 +3,10 @@ collectionName='employees'
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId
 
+var fs = require('fs');
+// var nophoto = fs.readFileSync('models/images/nophoto.png').toString('base64');
+var nophoto = require('./nophoto_b64')
+
 // Subdocument of hireHistory for Employee
 var hireHistorySchema = mongoose.Schema({
 
@@ -69,22 +73,24 @@ var employeeSchema = mongoose.Schema({
 	},
 
 	photo: {
-		type: String
+		type: String,
+		default: nophoto
 	},
 
 	phone: {
 		type: String,
 		required: [true, 'Phone number required'],
-		unique: [true, 'Duplicate phone number found'],
+		unique: [true, 'This phone is already registered'],
 		validate: {
-			validator: v => /^8[0-9]{10}$/.test(v),
+			// validator: v => /^8[0-9]{10}$/.test(v),
+			validator: v => /^(\+[0-9]{1,3}|8)-[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(v),
 			message: 'Invalid phone number' }
 	},
 
 	email: {
 		type: String,
 		required: [true, 'E-mail required'],
-		// unique: [true, 'Duplicate phone number found'],
+		unique: [true, 'This email is already registered'],
 		validate: {
 			validator: v => /.+@.+\..+/.test(v),
 			message: 'Invalid email'
@@ -100,7 +106,7 @@ var employeeSchema = mongoose.Schema({
 }
 );
 
-
+// var HireHistory = mongoose.model('HireHistory', hireHistorySchema);
 var Employee = module.exports = mongoose.model('Employee', employeeSchema, collectionName);
 
 // =============================================================================
@@ -125,20 +131,32 @@ module.exports.addEmployees = function(employees, callback){
 };
 
 
-module.exports.findEmployeeById = function(id, callback){
-	Employee.findById(id, callback);
+module.exports.findEmployeeById = function(id, callback, populate){
+	var pop = {
+		path: 'hirehistory.shopId',
+		model: 'Shop',
+		select: '_id name',
+	}
+	var p = Employee.findById(id);
+	if( populate )
+		p = p.populate(pop)
+
+	p.exec(callback)
 };
+
 
 
 module.exports.updateEmployee = function(id, people, options, callback){
 	var update = {
-		lastname   : people.lastname,
-		firstname  : people.firstname,
-		middlename : people.middlename,
-		phone      : people.phone,
-		email      : people.email,
-		birthdate  : people.birthdate,
-		hiredate   : people.hiredate
+		$set: {
+			lastname   : people.lastname,
+			firstname  : people.firstname,
+			middlename : people.middlename,
+			phone      : people.phone,
+			email      : people.email,
+			birthdate  : people.birthdate,
+			hiredate   : people.hiredate
+		}
 	};
 	Employee.findByIdAndUpdate(id, update, options, callback);
 }

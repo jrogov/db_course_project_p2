@@ -5,20 +5,28 @@ var mongoose = require('mongoose');
 var supplierSchema = mongoose.Schema({
 	name: {
 		type: String,
-		required: [true, 'Name required']
+		required: [true, 'Name required'],
+		validate: {
+			validator: v => /^.+$/.test(v),
+			message: 'Name can not be empty'
+		}
 	},
 
 	address: {
 		type: String,
-		required: [true, 'Address required']
+		required: [true, 'Address required'],
+		validate: {
+			validator: function(v){ return /^.+$/.test(v)},
+			message: 'Address can not be empty'
+		}
 	},
 
 	phone: {
 		type: String,
 		required: [true, 'Phone number required'],
-		unique: [true, 'Duplicate phone number found'],
+		// unique: [true, 'Duplicate phone number found'],
 		validate: {
-			validator: v => /^8[0-9]{10}$/.test(v),
+			validator: v => /^(\+[0-9]{1,3}|8)-[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(v),
 			message: 'Invalid phone number' }
 	},
 
@@ -26,7 +34,7 @@ var supplierSchema = mongoose.Schema({
 	email: {
 		type: String,
 		required: [true, 'E-mail required'],
-		unique: [true, 'Duplicate phone number found'],
+		// unique: [true, 'Duplicate phone number found'],
 		validate: {
 			validator: v => /.+@.+\..+/.test(v),
 			message: 'Invalid email'
@@ -53,14 +61,16 @@ module.exports.findSupplierById = function(id, callback){
 	Supplier.findById(id, callback);
 }
 
-module.exports.updateSupplier = function(id, supplier, callback){
+module.exports.updateSupplier = function(id, supplier, options, callback){
 	update = {
-		name    : supplier.name,
-		address : supplier.address,
-		phone   : supplier.phone,
-		email   : supplier.email
+		$set: {
+			name    : supplier.name,
+			address : supplier.address,
+			phone   : supplier.phone,
+			email   : supplier.email
+		}
 	};
-	Supplier.findByIdAndUpdate(id, update, callback);
+	Supplier.findByIdAndUpdate(id, update, options, callback);
 }
 
 module.exports.deleteSupplier = function(id, callback){

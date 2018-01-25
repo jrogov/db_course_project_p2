@@ -7,7 +7,11 @@ var productSchema = mongoose.Schema({
 
 	name: {
 		type: String,
-		required: [ true, 'Name required' ]
+		required: [ true, 'Name required' ],
+		validate: {
+			validator: v => /^.+$/.test(v),
+			message: 'Name can not be empty'
+		}
 	},
 
 	supplierid: {
@@ -23,12 +27,16 @@ var productSchema = mongoose.Schema({
 
 	shelfLife: {
 		type: Number, // in milliseconds
-		required: [ true, 'ShelfLife required' ]
+		required: [ true, 'ShelfLife required' ],
 	},
 
 	type: {
 		type: String,
-		required: [ true, 'Type required' ]
+		required: [ true, 'Type required' ],
+		validate: {
+			validator: v => /^.+$/.test(v),
+			message: 'Type can not be empty'
+		}
 	}
 });
 
@@ -49,20 +57,30 @@ module.exports.getProducts = function(callback){
 }
 
 
-module.exports.findProductById = function(id, callback){
-	Product.findById(id, callback);
+module.exports.findProductById = function(id, callback, populate){
+	var populate_data = {
+		path: 'supplierid',
+		// model: 'Supplier',
+		select: 'name _id'
+	}
+
+	var p = Product.findById(id)
+	if (populate) p = p.populate(populate_data);
+	p.exec(callback);
 }
 
 
-module.exports.updateProduct = function(id, product, callback){
+module.exports.updateProduct = function(id, product, options, callback){
 	var update = {
-		name       : product.name,
-		supplierid : product.supplierid,
-		price      : product.price,
-		shelfLife  : product.shelfLife,
-		type       : product.type
+		$set: {
+			name       : product.name,
+			supplierid : product.supplierid,
+			price      : product.price,
+			shelfLife  : product.shelfLife,
+			type       : product.type
+		}
 	}
-	Product.findByIdAndUpdate(id, update, callback)
+	Product.findByIdAndUpdate(id, update, options, callback)
 }
 
 
