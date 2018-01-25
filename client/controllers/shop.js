@@ -49,11 +49,6 @@ myApp.controller('ShopController',
             $http.get(api('/shop/'+id)).then(
             response => {
                 var shop = response.data;
-
-                // convert to days
-
-                // [ 'days', 'months', 'years', 'centuries' ]
-                shop['shelfLife'] = shop['shelfLife'] / (1000*60*60*24);
                 $scope.s = shop;
                 $scope.sm = $.extend(true, {}, shop);
             }
