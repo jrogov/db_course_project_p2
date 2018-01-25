@@ -12,25 +12,45 @@ myApp.controller('EmployeeController',
 
 //-------------------------------ROUTE FUNCTIONS--------------------------------
 
-
         $scope.openEmployeeProfile = function(id){
             $location.url('/employees/'+id);
             console.log(id);
+        }
+
+        $scope.openShopProfile = function(id){
+            $location.url('/shops/'+id)
         }
 
         $scope.openAddEmployee = function(){
             $location.url('/employees/add');
         }
 
-//-------------------------------API CALL FUNCTIONS-----------------------------
+//-------------------------------EXTERNAL ROUTES------------------------------
 
+        $scope.callPhone = function(phone){
+            $window.open('tel:'+phone)
+        }
+
+        $scope.openEmail = function(email){
+            $window.open('mailto:'+email)
+        }
+
+//-------------------------------API CALL FUNCTIONS-----------------------------
 
         $scope.getEmployee = function(id){
             var id = $routeParams.id
-            $http.get(apiurl+'/employee/'+id).then(
+            $http.get(api('/employee/'+id)).then(
             response => {
                 var employee = response.data;
-                // console.log(employee);
+                console.log(employee);
+
+                if( employee === null )
+                {
+                    console.log('Null!')
+                    $scope.error = 'No employee found. Opening Employees list'
+                    $location.url('/employees/');
+                    return;
+                }
 
                 // Add aliases for names
                 employee['fname'] = employee.firstname +' '+ employee.lastname;
@@ -38,122 +58,95 @@ myApp.controller('EmployeeController',
                 employee['ffname'] = employee.firstname + ' '+(mn?mn+' ':'') + employee.lastname;
 
                 // Convert dates to readable format
-                employee['birthdate'] = $.datepicker.formatDate('dd-mm-yy', new Date(employee['birthdate']));
-                employee['hiredate'] = $.datepicker.formatDate('dd-mm-yy', new Date(employee['hiredate']));
+                employee['birthdate'] = formatDateStr(employee['birthdate']);
+                employee['hiredate'] = formatDateStr(employee['hiredate']);
                 h = employee.hirehistory;
                 for( i in employee.hirehistory )
                 {
-                    h[i]['hiredate'] = $.datepicker.formatDate('dd-mm-yy', new Date(h[i]['hiredate']));
-                    h[i]['fireDate'] = $.datepicker.formatDate('dd-mm-yy', new Date(h[i]['fireDate']));
+                    console.log(h[i]);
+                    h[i]['hiredate'] = formatDateStr(h[i]['hiredate']);
+                    h[i]['fireDate'] = formatDateStr(h[i]['fireDate']);
                 }
                 $scope.e = employee;
+                $scope.em = clone(employee);
             }
-            , err => { console.log(err); }
+            , err => $scope.error = parse_error(err)
             );
         };
-
-        $scope.searchEmployees = function(){
-
-            /* parse */
-            sp = $scope.searchparams;
-            param_strings = sp.split(/\s+/);
-            params = {};
-            for( i in param_strings )
-            {
-                s = param_strings[i]
-                if( s.search(':') )
-                {
-                    key = s.match(/^(.*):/)[1]
-                    value = s.match(/:(.*)$/)[1]
-                    params[key] = value;
-                }
-            }
-            console.log(params);
-            // $http.get(apiurl+'/employee/search/', params)
-            // $http.get(ap)
-
-        }
 
         $scope.getEmployees = function(){
             $http.get(apiurl+'/employee').then(
             response => {
                 var employees = response.data;
                 for( i in employees )
-                    employees[i]['hiredate'] = $.datepicker.formatDate('dd-mm-yy', new Date(employees[i]['hiredate']))
+                    employees[i]['hiredate'] = formatDateStr(employees[i]['hiredate']);
                 $scope.employees = employees;
                 console.log(employees);
             }
-            , err => { console.log(err); }
+            , err => $scope.error = parse_error(err)
             );
         };
-
-        align_center = function(strings){
-            var max = 0;
-            var result = []
-            for( i in strings )
-                if( strings[i].length > max) max = strings[i].length;
-            for( i in strings )
-                result.push( '  '.repeat((max - strings[i].length)/2) + strings[i] )
-            return result.join('\n');
-        }
 
         $scope.deleteEmployee = function(id){
             var answer = confirm(
                 align_center(['Are you sure you want to DELETE', $scope.e.fname + '?']));
             if (answer) {
-                $http.delete(apiurl+'/employee/'+id).then(
-                    a => $location.url('/employees'));
+                $http.delete(apiurl+'/employee/'+id)
+                .then(
+                    a => $location.url('/employees'),
+                    err => $scope.error = parse_error(err))
             }
         }
 
         $scope.updateEmployee = function(){
-            // console.log("Update!");
-            // console.log($scope.e);
 
-            var e = $scope.e;
+            var e = clone($scope.em);
+
+            try{
+                e['birthdate'] = parseDate(e['birthdate']);
+                e['hiredate'] = parseDate(e['hiredate']);
+            }
+            catch(err){
+                console.log(err);
+            }
+            // delete e['photo'];
 
             var ans = confirm(align_center(['Are you sure you want to UPDATE', $scope.e.fname + "?"]));
             if( !ans) return;
 
-            e['birthdate'] = $.datepicker.parseDate( "dd-mm-yy", e['birthdate']);
-            e['hiredate'] = $.datepicker.parseDate( "dd-mm-yy", e['hiredate']);
-            e['photo'] = '';
-
             $http.put(
-                apiurl+'/employee/'+$scope.e._id,
-                $scope.e
+                apiurl+'/employee/'+e._id,
+                e
             ).then(
-                a => {
-                    $window.location.reload(); }
-                );
+                a => $window.location.reload()
+               , err => $scope.error = parse_error(err)
+                )
 
         }
 
         $scope.addEmployee = function(){
 
             $scope.e;
+
+            var e = clone($scope.e);
+
+            if(e['hiredate']) e['hiredate'] = parseDate(e['hiredate'])
+            if(e['birthdate']) e['birthdate'] = parseDate(e['birthdate'])
+
             $http.post(
-                apiurl+'/employee/',
-                $scope.e)
+                api('/employee/'),
+                e)
             .then(
                 a =>
                 {
-                    console.log(a);
-                    // $location.url();
+                    if( a.data.hasOwnProperty('_id') )
+                        $location.url('/employees/'+a.data._id)
+                    else
+                        $location.url('/employees/');
                 } )
             .catch(
-                a =>
-                {
-                    errs = a.data.error.errors;
-                    for(i in errs){
-                        console.log(errs[i].message);
-                        console.log($('#error').val())
-                        $scope.error = errs[i].message;
-                        // document.getElementById('error').value = errs[i].message;
-                        // $('#error').val(errs[i].message);
-                        return 0;
-                    }
-                })
+                err => $scope.error = parse_error(err)
+                )
 
         }
     }

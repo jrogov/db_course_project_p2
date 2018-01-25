@@ -1,0 +1,62 @@
+<div class="panel panel-default" ng-init="getSupplier()">
+    <div>
+        <h2>{{s.name}}</h2>
+    </div>
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <table class="table">
+
+        <tr>
+            <td class="header">
+                <div class="pm"><div class="data-field">{{s.name}}</div></div>
+                <div class="em">
+                    <input placeholder="Supplier Name" ng-model="sm.name" class="form-control" required>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Address
+                <div class="pm"><div class="data-field">{{s.address}}</div></div>
+                <div class="em"><input ng-model="sm.address" class="form-control" required></div>
+            </td>
+        </tr>
+
+        <tr class="no-borders"> <th><h4>Contact Info</h4></th></tr>
+        <tr>
+            <td colspan=2>
+                <h5>Phone</h5>
+                <div class="pm"><div class="data-field" ng-click=callPhone(s.phone) title="Call {{s.phone}}">{{s.phone}}</div></div>
+                <div class="em"><input ng-model="sm.phone" class="form-control phone-field" required></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <h5>Email</h5>
+
+                <div class="pm"><div class="data-field email-data" ng-click=openEmail(s.email) title="Send email to {{s.email}}">{{s.email}}</div></div>
+
+                <div class="em"><input ng-model="sm.email" class="form-control" required></div>
+            </td>
+        </tr>
+
+        <tr class="no-borders" align="center">
+            <td>
+                <button class="btn pm" onclick="editmode()">Edit Profile</button>
+                <button class="btn btn-danger em" onclick="profilemode()">Cancel</button>
+            </td>
+            <td>
+                <button class="btn btn-danger pm" ng-click="deleteSupplier(s._id)">Delete Profile</button>
+                <button class="btn em" ng-click="updateSupplier()">OK</button>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        testtitleapplier()
+        makeactive($('#suppliers-nav'))
+    </script>
+</div>

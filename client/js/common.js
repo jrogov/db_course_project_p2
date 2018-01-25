@@ -4,8 +4,6 @@ function editmode(){
     var es = document.getElementsByClassName('em');
     for( var i=0, node; node = ps.item(i); i++ ) node.style['display']='none';
     for( var i=0, node; node = es.item(i); i++ ) node.style['display']='block';
-
-    // for( i in es ) es[i].style['display']='block';
 };
 
 function profilemode(){
@@ -34,34 +32,76 @@ function previewFile() {
   }
 }
 
-function restrict_date_input(){
-  // $('select').on('change', function() {
-  // alert( this.value );
-// })
+String.prototype.capitalize = function() {
+    return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+};
+
+function apply_calendar(){
+  $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
+}
+
+function apply_masks(){
+
+  $('.id-field').mask(
+    'xxxxxxxxxxxx',
+    // 'xxxx-xxx-xx-xxx',
+      {
+        translation: { 'x' : { pattern: /[0-9a-f]/} },
+        placeholder: '456789abcdef'
+      }
+    );
 
 
-  // $('.date-format').map(
-    // function() {console.log(this); this.change( (v) => console.log(v));  return this.id;} ).get().join();
-  // $('.date-format').change( (e) => console.log(e) );
-  // $('.date-format').keypress( (v) => { console.log($(this)); return false; }  )
-  d = $('.date-format');
-  // $('.date-format').mask('00-00-0000');
-  d.mask('00-00-0000');
-  d.keypress( function(){ console.log($(this).val()) } );
+  $('.money-field').mask(
+    '0#',
+    // '$#.##0,00',
+    {
+      // reverse: true,
+      placeholder: '$3'
+    })
 
-  // es = $('.date-format')
-  // console.log(es)
-  // console.log(es[0])
-  // es.map( () => console.log(this) );
-  // for( i in es )
-    // console.log(i)
-  // for( i in es )
-    // console.log(typeof(i))
-    // es[i].change( () => console.log(this.value));
+  d = $('.date-field');
 
-  // es.map( e => e.change( () => console.log(this.value); ));
-  // for( i in elems )
-    // es[i].onchange = function(v) { console.log(v) };
+  d.mask('00-00-0000', {
+    placeholder: "__-__-____"
+  });
 
-  // es.on('change', function() { console.log(this.value); } );
+
+  var elems_str = '.phone-field';
+
+  //
+  // Unfortunately, it doesn't work with AngularJS: overwrites onKeyPress of angular (a guess)
+  //
+  // options = {
+
+  //   onKeyPress: function(cep, e, field, options){
+  //     var masks = ['+099-999-999-9999', '8-999-999-9999']
+  //     // var mask = ( cep.startsWith('8') || cep.length == 0) ? masks[1] : masks[0];
+  //     var mask = ( cep.startsWith('8') ) ? masks[1] : masks[0];
+  //     $(elems_str).mask(mask, options);
+  //   },
+
+  //   selectOnFocus: true
+
+  //   // translation: {
+  //   //   '+': {
+  //   //     pattern: /\+/,
+  //   //     optional: true
+  //   //   }
+  //   // }
+  // }
+  // $(elems_str).mask('0', options)
+
+  $(elems_str).mask('+099-999-999-9999')
+
+}
+
+align_center = function(strings){
+    var max = 0;
+    var result = []
+    for( i in strings )
+        if( strings[i].length > max) max = strings[i].length;
+    for( i in strings )
+        result.push( '  '.repeat((max - strings[i].length)/2) + strings[i] )
+    return result.join('\n');
 }

@@ -1,0 +1,71 @@
+<div class="panel panel-default" ng-init="getProduct()">
+    <div>
+        <h2>{{p.name}}</h2>
+    </div>
+
+    </script>
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <table class="table">
+        <tr>
+            <td class="header" colspan=2>
+                <div class="pm"><div class="data-field">{{p.name}}</div></div>
+                <div class="em">
+                    <input placeholder="Product Name" ng-model="pm.name" class="form-control" required>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <div class="pm">
+                    SupplierId
+                    <div class="data-field" ng-click=openSupplierProfile(p.supplierid._id) title="Open {{p.supplierid.name}} Profile">{{p.supplierid.name}}</div>
+                </div>
+                <!-- <div class="em"><input ng-model="pm.supplierid" class="form-control" required></div> -->
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                Price
+                <div class="pm"><div class="data-field">${{p.price}}</div></div>
+                <div class="em"><input ng-model="pm.price" class="form-control money-field" required type="text"></div>
+            </td>
+        </tr>
+         <tr>
+            <td colspan=2>
+                Shelf Life
+                <div class="pm"><div class="data-field">{{p.shelfLife}} days</div></div>
+                <div class="em"><input ng-model="pm.shelfLife" class="form-control" required type="text"></div>
+            </td>
+        </tr>
+         <tr>
+            <td colspan=2>
+                Type
+                <div class="pm"><div class="data-field">{{p.type}}</div></div>
+                <div class="em"><input ng-model="pm.type" class="form-control" required type="text"></div>
+            </td>
+        </tr>
+
+
+        <tr class="no-borders" align="center">
+            <td>
+                <button class="btn pm" onclick="editmode()">Edit Profile</button>
+                <button class="btn btn-danger em" onclick="profilemode()">Cancel</button>
+            </td>
+            <td>
+                <button class="btn btn-danger pm" ng-click="deleteProduct(p._id)">Delete Profile</button>
+                <button class="btn em" ng-click="updateProduct()">OK</button>
+            </td>
+        </tr>
+
+    </table>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#products-nav'))
+    </script>
+
+
+</div>

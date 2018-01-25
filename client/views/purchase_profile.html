@@ -1,0 +1,73 @@
+<div class="panel panel-default" ng-init="getPurchase()">
+    <div>
+        <h2>Purchase <br>#{{p._id.toUpperCase()}}</h2>
+    </div>
+
+    <script type="text/javascript">
+    $(function() {
+         $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
+    });
+
+    </script>
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <table class="table">
+
+
+        <tr>
+            <td>
+                Shop
+                <div class="pm"><div class="data-field" ng-click=openShopProfile(p.shopid._id) title="Open {{p.shopid.name}} profile">{{p.shopid.name}}</div></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Cassier
+                <div class="pm"><div class="data-field" ng-click=openCassierProfile(p.cassierid._id) title="Open {{p.cassierid.firstname}} {{p.cassierid.lastname}} profile">{{p.cassierid.firstname}} {{p.cassierid.lastname}}</div></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan=2>
+                Purchase Date
+                <div class="pm"><div class="data-field">{{p.purchasedate}}</div></div>
+            </td>
+        </tr>
+<!--
+        <tr class="no-borders" align="center">
+            <td>
+                <button class="btn btn-danger pm" ng-click="deletePurchase(p._id)">Delete Purchase</button>
+            </td>
+        </tr>
+         -->
+    </table>
+
+
+    <table class="table">
+
+        <tr class="no-borders"><td colspan=6><h4>Purchase Items</h4></td></tr>
+        <tr>
+
+            <td class='table-column table-text'>Product ID</td>
+            <td class='table-column table-numeric'>Count</td>
+        </tr>
+        <tr ng-repeat="i in p.items" ng-click=openProductProfile(i.productId._id) title="Open {{i.productId.name}} profile">
+            <td class='table-column table-text'>{{i.productId.name}}</td>
+            <td class='table-column table-numeric'>{{i.count}}</td>
+        </tr>
+
+
+    </table>
+
+    <script>
+        $(function() {
+             $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
+        });
+        apply_masks()
+        makeactive($('#purchases-nav'))
+    </script>
+    <!-- <script>pm()</script> -->
+
+
+</div>

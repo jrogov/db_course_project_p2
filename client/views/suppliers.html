@@ -1,0 +1,28 @@
+<div class="inner_container" ng-init="getSuppliers()">
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <div>
+        <table class="table">
+
+            <tr><td colspan=3><button class="btn" ng-click="openAddSupplier()" title="Add Supplier">Add Supplier</button></td></tr>
+
+            <!-- <a class="btn-block" display:block href="smthsmth"> -->
+
+            <tr ng-repeat="e in suppliers" ng-click=openSupplierProfile(e._id) title="Open {{e.name}} profile">
+                <td>{{e.name}}</td>
+                <td colspan="2"></td>
+                <td>{{e.phone}}</td>
+                <td>{{e.email}}</td>
+
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#suppliers-nav'))
+    </script>
+
+</div>

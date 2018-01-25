@@ -1,0 +1,26 @@
+<div class="inner_container" ng-init="getStockChanges()">
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <div>
+        <table class="table">
+
+            <!-- <tr><td colspan=3><button class="btn" ng-click="openAddStockChange()" title="Add StockChange">Add StockChange</button></td></tr> -->
+
+            <tr ng-repeat="e in stockchanges" ng-click=openStockChangeProfile(e._id) title="Show details for stock change">
+
+                <td>{{e._id}}</td>
+                <td>{{e.shopid.name}}</td>
+                <td>On {{e.arrivaldate}}</td>
+
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#stockchanges-nav'))
+    </script>
+
+</div>

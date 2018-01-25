@@ -1,0 +1,63 @@
+<div class="panel panel-default" ng-init="getStockChange()">
+    <div>
+        <h2>StockChange <br>#{{sc._id.toUpperCase()}}</h2>
+    </div>
+
+    <script type="text/javascript">
+    $(function() {
+         $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
+    });
+
+    </script>
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <table class="table">
+
+
+        <tr>
+            <td>
+                Shop
+                <div class="pm"><div class="data-field" ng-click=openShopProfile(sc.shopid._id)>{{sc.shopid.name}}</div></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan=2>
+                Arrival
+                <div class="pm"><div class="data-field">{{sc.arrivaldate}}</div></div>
+            </td>
+        </tr>
+<!--
+        <tr class="no-borders" align="center">
+            <td>
+                <button class="btn btn-danger pm" ng-click="deleteStockChange(sc._id)">Delete StockChange</button>
+            </td>
+        </tr>
+         -->
+    </table>
+
+
+    <table class="table">
+
+        <tr class="no-borders"><td colspan=6><h4>StockChange Items</h4></td></tr>
+        <tr>
+            <td class='table-column table-text'>Product ID</td>
+            <td class='table-column table-numeric'>Count</td>
+            <td class='table-column table-date'>Manufactured</td>
+        </tr>
+        <tr ng-repeat="i in sc.items" ng-click=openProductProfile(i.productid._id) title="Open {{i.productid.name}} profile">
+            <td class='table-column table-text'>{{i.productid.name}}</td>
+            <td class='table-column table-numeric'>{{i.count}}</td>
+            <td class='table-column table-date'>{{i.manufactureDate}}</td>
+        </tr>
+
+
+    </table>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#stockchanges-nav'))
+    </script>
+</div>

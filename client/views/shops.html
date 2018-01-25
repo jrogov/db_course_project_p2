@@ -1,0 +1,25 @@
+<div class="inner_container" ng-init="getShops()">
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <div>
+        <table class="table">
+
+            <tr><td colspan=3><button class="btn" ng-click="openAddShop()" title="Add Shop">Add Shop</button></td></tr>
+
+            <tr ng-repeat="e in shops" ng-click=openShopProfile(e._id) title="Open {{e.name}} profile">
+                <td colspan=1></td>
+                <td>{{e.name}}</td>
+                <td colspan=2></td>
+                <td>{{e.address}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#shops-nav'))
+    </script>
+
+</div>

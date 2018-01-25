@@ -2,20 +2,22 @@ body{
     background-color: #c7b39b;
 }
 
-tr[ng-click] {
+/*tr[ng-click] {*/
+[ng-click] {
     cursor: pointer;
 }
 
-tr[ng-click]:hover {
+/*tr[ng-click]:hover {*/
+[ng-click]:hover {
     background-color: #9baec6;
 }
 
 .pm{
-    display:block;
+    display: block;
 }
 
 .em{
-    display:none;
+    display: none;
 }
 
 /* copypaste from bootstraps form-control*/
@@ -63,4 +65,13 @@ div.centered{
 
     width: 50%;
     height: 50%;
+}
+
+#error.danger {
+    background: #dc3545;
+    color: black;
+    text-align: center;
+    border: none;
+    /*padding: 0.25rem 0;*/
+    margin: 0.5rem 0;
 }

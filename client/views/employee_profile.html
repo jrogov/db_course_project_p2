@@ -4,9 +4,6 @@
     </div>
 
     <script type="text/javascript">
-    $(function() {
-         $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
-    });
 
     function put_photo(path, id){
         console.log(path);
@@ -23,7 +20,11 @@
 
     </script>
 
+    <div id="error" ng-bind="error" class="danger"></div>
+
     <table class="table">
+
+
         <tr>
             <td rowspan="3">
                 <div class="pm centered">
@@ -42,26 +43,24 @@
             <td class="header">
                 <div class="pm"><div class="data-field">{{e.ffname}}</div></div>
                 <div class="em">
-                    <input placeholder="First Name" ng-model="e.firstname" class="form-control" required>
-                    <input placeholder="Middle Name" ng-model="e.middlename" class="form-control" required>
-                    <input placeholder="Last Name" ng-model="e.lastname" class="form-control" required>
+                    <input placeholder="First Name" ng-model="em.firstname" class="form-control" required>
+                    <input placeholder="Middle Name" ng-model="em.middlename" class="form-control" required>
+                    <input placeholder="Last Name" ng-model="em.lastname" class="form-control" required>
                 </div>
             </td>
         </tr>
         <tr>
             <td>
                 Born
-                <!-- TODO data input -->
                 <div class="pm"><div class="data-field">{{e.birthdate}}</div></div>
-                <div class="em"><input ng-model="e.birthdate" class="form-control show-calendar date-format" required></div>
+                <div class="em"><input ng-model="em.birthdate" class="form-control show-calendar date-field" required type="text"></div>
             </td>
         </tr>
         <tr>
             <td>
                 Hired
                 <div class="pm"><div class="data-field">{{e.hiredate}}</div></div>
-                <div class="em"><input ng-model="e.hiredate" class="form-control show-calendar date-format" required type="text"></div>
-                <div class="em"><input class="form-control date-format" required type="text" data-mask="00/00/0000" data-mask-selectonfocus="true"></div>
+                <div class="em"><input ng-model="em.hiredate" class="form-control show-calendar date-field" required type="text"></div>
             </td>
         </tr>
 
@@ -69,17 +68,18 @@
         <tr>
             <td colspan=2>
                 <h5>Phone</h5>
-                <div class="pm"><div class="data-field">{{e.phone}}</div></div>
-                <div class="em"><input ng-model="e.phone" class="form-control" required></div>
+                <div class="pm"><div class="data-field" ng-click="callPhone(e.phone)" title="Call {{e.phone}}">{{e.phone}}</div></div>
+                <div class="em"><input ng-model="em.phone" class="form-control phone-field" required></div>
             </td>
         </tr>
         <tr>
             <td colspan=2>
                 <h5>Email</h5>
-                <div class="pm"><div class="data-field">{{e.email}}</div></div>
-                <div class="em"><input ng-model="e.email" class="form-control" required></div>
+                <div class="pm"><div class="data-field" ng-click="openEmail(e.email)" title="Send email to {{e.email}}">{{e.email}}</div></div>
+                <div class="em"><input ng-model="em.email" class="form-control" required></div>
             </td>
         </tr>
+
         <tr class="no-borders" align="center">
             <td>
                 <button class="btn pm" onclick="editmode()">Edit Profile</button>
@@ -95,6 +95,7 @@
 
     <table class="table">
         <!-- TODO -->
+        <!-- Hiring Firing employee -->
         <!--
         <tr><tr colspan=6><h4>Hire</h4></td></tr>
         <tr>
@@ -106,12 +107,12 @@
             <th class='table-column table-text'>Fire Reason</th>
         </tr>
         <tr>
-           <td><input class="form-control" ng-model="h.title" required></td>
-           <td><input class="form-control" ng-model="h.salary" required></td>
-           <td><input class="form-control" ng-model="h.shopId" required></td>
-           <td><input class="form-control" ng-model="h.hiredate" required></td>
-           <td><input class="form-control" ng-model="h.fireDate" required></td>
-           <td><input class="form-control" ng-model="h.fireReason" required></td>
+           <td><input class="form-control" ng-model="hm.title" required></td>
+           <td><input class="form-control" ng-model="hm.salary" required></td>
+           <td><input class="form-control" ng-model="hm.shopId" required></td>
+           <td><input class="form-control" ng-model="hm.hiredate" required></td>
+           <td><input class="form-control" ng-model="hm.fireDate" required></td>
+           <td><input class="form-control" ng-model="hm.fireReason" required></td>
         </tr>
     -->
 
@@ -125,10 +126,11 @@
             <th class='table-column table-date'>Fire Date</th>
             <th class='table-column table-text'>Fire Reason</th>
         </tr>
-        <tr ng-repeat="h in e.hirehistory" class="h.fireDate?'fired':''">
+        <tr ng-repeat="h in e.hirehistory" ng-click=openShopProfile(h.shopId._id)
+        class="h.fireDate?'fired':''" title="Open {{h.shopId.name}}">
             <td class='table-column table-text'>{{h.title}}</td>
             <td class='table-column table-numeric'>{{h.salary}}</td>
-            <td class='table-column table-text'>{{h.shopId}}</td>
+            <td class='table-column table-text'>{{h.shopId.name}}</td>
             <td class='table-column table-date'>{{h.hiredate}}</td>
             <td class='table-column table-date'>{{h.fireDate}}</td>
             <td class='table-column table-text'>{{h.fireReason}}</td>
@@ -137,8 +139,10 @@
 
     </table>
 
-    <script>restrict_date_input()</script>
-    <!-- <script>pm()</script> -->
-
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#employees-nav'))
+    </script>
 
 </div>

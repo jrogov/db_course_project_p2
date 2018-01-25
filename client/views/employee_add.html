@@ -1,6 +1,6 @@
-<div class="panel panel-default">
+<div class="panel panel-default" ng-init=initAddEmployee()>
     <div>
-        <h2>{{e.fname}}</h2>
+        <h2>Add Employee</h2>
     </div>
 
     <script type="text/javascript">
@@ -8,6 +8,8 @@
          $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
     });
     </script>
+
+    <div id="error" ng-bind="error" class="danger"></div>
 
     <table class="table">
         <tr colspan=3>
@@ -21,10 +23,11 @@
                 <!-- </div> -->
             <!-- </td> -->
             <td class="header">
+                Name
                 <div class="">
-                    <input placeholder="First Name" ng-model="e.firstname" class="form-control" required>
-                    <input placeholder="Middle Name" ng-model="e.middlename" class="form-control" required>
-                    <input placeholder="Last Name" ng-model="e.lastname" class="form-control" required>
+                    <input title="First Name" placeholder="First Name" ng-model="e.firstname" class="form-control" required>
+                    <input title="Middle Name" placeholder="Middle Name" ng-model="e.middlename" class="form-control" required>
+                    <input title="Last Name" placeholder="Last Name" ng-model="e.lastname" class="form-control" required>
                 </div>
             </td>
         </tr>
@@ -32,13 +35,13 @@
             <td>
                 Born
                 <!-- TODO data input -->
-                <div class=""><input ng-model="e.birthdate" class="form-control show-calendar" required></div>
+                <div class=""><input title="Birthdate" ng-model="e.birthdate" class="form-control date-field show-calendar" required></div>
             </td>
         </tr>
         <tr>
             <td>
                 Hired
-                <div class=""><input ng-model="e.hiredate" class="form-control show-calendar" required type="text"></div>
+                <div class=""><input title="Hiredate" ng-model="e.hiredate" class="form-control show-calendar date-field" required type="text"></div>
             </td>
         </tr>
 
@@ -46,24 +49,26 @@
         <tr>
             <td colspan=2>
                 <h5>Phone</h5>
-                <div class=""><input ng-model="e.phone" class="form-control" required></div>
+                <div class=""><input class="phone-field" title="Phone" ng-model="e.phone" class="form-control" required></div>
             </td>
         </tr>
         <tr>
             <td colspan=2>
                 <h5>Email</h5>
-                <div class=""><input ng-model="e.email" class="form-control" required></div>
-            </td>
-        </tr>
-        <tr align="center">
-            <td colspan=3>
-                <p id="error" ng-model="error" class="text-danger">No</p>
+                <div class=""><input title="Email" ng-model="e.email" class="form-control" required></div>
             </td>
         </tr>
         <tr align="center">
             <td colspan=2>
-                <button class="btn" ng-click="addEmployee()">Add Employee</button>
+                <button class="btn" ng-click=addEmployee() title="AddEmployee">Add Employee</button>
             </td>
         </tr>
     </table>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#employees-nav'))
+    </script>
+
 </div>

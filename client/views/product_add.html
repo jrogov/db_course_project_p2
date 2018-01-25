@@ -1,0 +1,60 @@
+<div class="panel panel-default">
+    <div>
+        <h2>Add Product</h2>
+    </div>
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <table class="table">
+        <tr>
+            <td class="header" colspan=2>
+                <div>
+                    Product Name
+                    <input ng-model="p.name" class="form-control" required>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                SupplierId
+                <div><input ng-model="p.supplierid" class="form-control id-field" required></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                Price
+                <div><input ng-model="p.price" class="form-control money-field" required type="text"></div>
+            </td>
+        </tr>
+         <tr>
+            <td colspan=2>
+                Shelf Life
+                <div><input ng-model="p.shelfLife" class="form-control" required type="text"></div>
+            </td>
+        </tr>
+         <tr>
+            <td colspan=2>
+                Type
+                <div><input ng-model="p.type" class="form-control" required type="text"></div>
+            </td>
+        </tr>
+
+
+        <tr class="no-borders" align="center">
+            <td>
+                <button class="btn btn-danger" onclick="profilemode()">Cancel</button>
+            </td>
+            <td>
+                <button class="btn" ng-click="addProduct()">OK</button>
+            </td>
+        </tr>
+
+    </table>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#products-nav'))
+    </script>
+
+</div>

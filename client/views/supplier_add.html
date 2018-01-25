@@ -1,0 +1,50 @@
+<div class="panel panel-default">
+    <div>
+        <h2>Add Supplier</h2>
+    </div>
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <table class="table">
+
+        <tr>
+            <td class="header">
+                <div class="">
+                    <input placeholder="Supplier Name" ng-model="s.name" class="form-control" required>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Address
+                <div class=""><input ng-model="s.address" class="form-control" required></div>
+            </td>
+        </tr>
+
+        <tr class="no-borders"> <th><h4>Contact Info</h4></th></tr>
+        <tr>
+            <td colspan=2>
+                <h5>Phone</h5>
+                <div class=""><input ng-model="s.phone" class="form-control phone-field" required></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <h5>Email</h5>
+                <div class=""><input ng-model="s.email" class="form-control" required></div>
+            </td>
+        </tr>
+
+        <tr class="no-borders" align="center">
+            <td>
+                <button class="btn " ng-click="addSupplier()">Add Supplier</button>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#suppliers-nav'))
+    </script>
+</div>

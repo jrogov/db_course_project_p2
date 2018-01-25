@@ -1,0 +1,30 @@
+<div class="inner_container" ng-init="getPurchases()">
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <div>
+        <table class="table">
+
+            <!-- <tr><td colspan=3><button class="btn" ng-click=openAddPurchase() title="Add Purchase">Add Purchase</button></td></tr> -->
+
+            <!-- <a class="btn-block" display:block href="smthsmth"> -->
+
+            <tr ng-repeat="e in purchases" ng-click=openPurchaseProfile(e._id) title="Show purchase details">
+                <td><img src='data:image/png;base64, {{e.photo}}'/></td>
+
+                <!-- <td>{{e.photo.data}}</td> -->
+                <td class="table-column table-text">{{e._id}}</td>
+                <td class="table-column table-text">{{e.shopid.name}}</td>
+                <td class="table-column table-text">{{e.cassierid.firstname}} {{e.cassierid.lastname}}</td>
+                <td class="table-column table-numeric">On {{e.purchasedate}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#purchases-nav'))
+    </script>
+
+</div>

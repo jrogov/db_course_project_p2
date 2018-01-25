@@ -1,0 +1,32 @@
+<div class="inner_container" ng-init="getProducts()">
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+    <div>
+        <table class="table">
+
+            <tr><td colspan=3><button class="btn" ng-click="openAddProduct()" title="Add Product">Add Product</button></td></tr>
+
+            <tr ng-repeat="e in products" ng-click="openProductProfile(e._id)" title="Show info about {{e.name}}">
+                <td></td>
+                <td>{{e.name}}</td>
+                <!-- <td colspan="2"></td> -->
+                <td></td>
+                <!-- <td>Supplier ID: {{e.supplierid}}</td> -->
+                <td class="table-column table-numeric ">${{e.price}}</td>
+                <!-- <td></td> -->
+                <td>{{e.type}}</td>
+            </tr>
+
+
+        </table>
+    </div>
+
+    <script>
+        $(function() {
+             $( ".show-calendar" ).datepicker({ dateFormat: 'dd-mm-yy'});
+        });
+        apply_masks()
+        makeactive($('#products-nav'))
+    </script>
+</div>

@@ -1,0 +1,47 @@
+<div class="panel panel-default">
+    <div>
+        <h2>Add Shop</h2>
+    </div>
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
+
+    <table class="table">
+
+        <tr>
+            <td class="header" colspan=2>
+                Shop Name
+                <div class="">
+                    <input placeholder="Shop Name" ng-model="s.name" class="form-control" required>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                Address
+                <div class=""><input ng-model="s.address" class="form-control" required></div>
+            </td>
+        </tr>
+
+        <tr class="no-borders"> <th><h4>Contact Info</h4></th></tr>
+        <tr>
+            <td colspan=2>
+                <h5>Phone</h5>
+                <div class=""><input ng-model="s.phone" class="form-control phone-field" required></div>
+            </td>
+        </tr>
+
+        <tr class="no-borders" align="center">
+            <td>
+                <button class="btn " ng-click="addShop()" title="Add shop">Add Shop</button>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#shops-nav'))
+    </script>
+
+</div>

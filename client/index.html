@@ -11,22 +11,13 @@
 
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Angular -->
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script> -->
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
-    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-
-    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
-    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-route.js"></script>
 
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script> -->
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.js"></script> -->
 
     <!-- Helper functions -->
     <script src="js/common.js"></script>
@@ -38,64 +29,68 @@
 
     <!-- Controllers -->
     <script src="controllers/employee.js"></script>
-    <!-- <script src="./controllers/product.js"></script> -->
-    <!-- <script src="./controllers/purchase.js"></script> -->
-    <!-- <script src="./controllers/shop.js"></script> -->
-    <!-- <script src="./controllers/stockchange.js"></script> -->
-    <!-- <script src="./controllers/supplier.js"></script> -->
-    <!-- <script src="./controllers/database.js"></script> -->
+    <script src="controllers/product.js"></script>
+    <script src="controllers/purchase.js"></script>
+    <script src="controllers/shop.js"></script>
+    <script src="controllers/stockchange.js"></script>
+    <script src="controllers/supplier.js"></script>
+    <script src="controllers/database.js"></script>
 
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-    <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
-    <!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
-
 
     <title>Sample Store</title>
 
 </head>
 
 <body>
+    <script type="text/javascript">
+        makeactive = function(elem){
+            $('.nav-item').removeClass('active');
+            elem.addClass('active')
+        }
+    </script>
+
+
     <div class="container">
         <header class="masthead">
-            <h1>Fivey Store</h1>
-            <!-- <nav class="navbar navbar-expand-md navbar-light bg-light rounded mb-3"> -->
+            <h1>Sample Store</h1>
                 <nav class="navbar navbar-expand-md navbar-light bg-light rounded mb-3">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <ul class="navbar-nav text-md-center nav-justified w-100">
 
-                            <li class="nav-item active">
-                                <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
+                            <!-- <li class="nav-item active"> -->
+                            <li id='home-nav' class="nav-item">
+                                <a onclick="makeactive($(this).parent())" class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#!employees">Employees</a>
+                            <li id='employees-nav' class="nav-item">
+                                <a onclick="makeactive($(this).parent())" class="nav-link" href="#!employees">Employees</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#!products">Products</a>
+                            <li id='products-nav' class="nav-item">
+                                <a onclick="makeactive($(this).parent())" class="nav-link" href="#!products">Products</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#!purchases">Purchases</a>
+                            <li id='purchases-nav' class="nav-item">
+                                <a onclick="makeactive($(this).parent())" class="nav-link" href="#!purchases">Purchases</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#!shops">Shops</a>
+                            <li id='shops-nav' class="nav-item">
+                                <a onclick="makeactive($(this).parent())" class="nav-link" href="#!shops">Shops</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#!stockchanges">Stock Changes</a>
+                            <li id='stockchanges-nav' class="nav-item">
+                                <a onclick="makeactive($(this).parent())" class="nav-link" href="#!stockchanges">Stock Changes</a>
                             </li>
-                            <li class="nav-item">
-                             <a class="nav-link" href="#!suppliers">Suppliers</a>
+                            <li id='suppliers-nav' class="nav-item">
+                                <a onclick="makeactive($(this).parent())" class="nav-link" href="#!suppliers">Suppliers</a>
                             </li>
                             <!-- Future support for Database Management: drop database, regenerate data, etc. -->
                             <!-- <li class="nav-item">
-                             <a class="nav-link" href="#!suppliers">Database</a>
+                             <a onclick="console.log($($(this).parent()).parent())" class="nav-link" href="#!suppliers">Database</a>
                             </li> -->
 
                      </ul>
                  </div>
              </nav>
          </header>
+
+         <script>makeactive($('#home-nav'))</script>
 
          <main ng-view></main>
      </div>

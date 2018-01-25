@@ -1,4 +1,7 @@
 <div class="inner_container" ng-init="getEmployees()">
+
+    <div id="error" ng-bind="error" class="danger"></div>
+
     <div>
         <table class="table">
 
@@ -12,11 +15,11 @@
             <tr><td></td><td><button class="btn" ng-click="searchEmployees()">Search</button></td><td></td></tr>
  -->
 
-            <tr><td colspan=3><button class="btn" ng-click="openAddEmployee()">Add Employee</button></td></tr>
+            <tr><td colspan=3><button class="btn" ng-click="openAddEmployee()" title="Add Employee">Add Employee</button></td></tr>
 
             <!-- <a class="btn-block" display:block href="smthsmth"> -->
 
-            <tr ng-repeat="e in employees" ng-click=openEmployeeProfile(e._id)>
+            <tr ng-repeat="e in employees" ng-click=openEmployeeProfile(e._id) title="Open profile of {{e.firstname}} {{e.lastname}}">
                 <td><img src='data:image/png;base64, {{e.photo}}'/></td>
 
                 <!-- <td>{{e.photo.data}}</td> -->
@@ -25,4 +28,11 @@
             </tr>
         </table>
     </div>
+
+    <script>
+        apply_calendar()
+        apply_masks()
+        makeactive($('#employees-nav'))
+    </script>
+
 </div>
