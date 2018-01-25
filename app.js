@@ -45,20 +45,28 @@ function isEmpty(obj)
     return true;
 }
 
+// If CACHE found, returns it
+// Else:
+// 	1. return DB data
+//	2. set CACHE
+// If CACHE provider doesn't work (=returns error for some reason):
+// 	1. log error
+//  2. return DB data
+
+
 // get employees
 server.get('/api/employee', function(req, res) {
 	console.log('sending employees');
-	cache.get("employees", function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+	cache.get("employee", function(err, rep) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			console.log("did not find in cache, querying db");
 			Employee.getEmployees(function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
-					cache.set("employees", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("employee", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
 			}, true);
 		}
@@ -76,9 +84,8 @@ server.get('/api/employee/:_id', function(req, res) {
 	console.log('/api/employee/'+id);
 
 	cache.get("employee:" + id, function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			Employee.findEmployeeById(id, function (error, emp) {
 				console.log("did not find in cache, querying db");
 				if(error) res.status(400).send(
@@ -87,7 +94,7 @@ server.get('/api/employee/:_id', function(req, res) {
 					console.log('Sending data');
 					res.json(emp);
 					console.log('Caching data');
-					cache.set("employee:"+id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("employee:"+id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
 			}, true);
 		}
@@ -116,7 +123,7 @@ server.put('/api/employee/:_id', function(req, res) {
 			console.log('updated');
 			res.json(emp);
 			cache.del("employee");
-			cache.set("employee:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("employee:" + id);
 		}
 	});
 });
@@ -147,7 +154,7 @@ server.post('/api/hire/:_id', function(req, res) {
 		else {
 			res.json(emp);
 			cache.del("employee");
-			cache.set("employee:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("employee:" + id);
 		}
 	});
 });
@@ -162,7 +169,7 @@ server.delete('/api/hire/:_id', function(req, res) {
 			res.status(200).send(
 				{message: 'ok'});
 			cache.del("employee");
-			cache.set("employee:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("employee:" + id);
 		}
 	});
 });
@@ -178,7 +185,7 @@ server.delete('/api/employee/:_id', function(req, res) {
 			res.status(200).send(
 				{message: 'ok'});
 			cache.del("employee");
-			cache.set("employee:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("employee:" + id);
 		}
 	});
 });
@@ -188,15 +195,14 @@ server.delete('/api/employee/:_id', function(req, res) {
 server.get('/api/product', function(req, res) {
 	console.log('sending products');
 	cache.get("product", function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			Product.getProducts(function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
-					cache.set("product", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("product", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
 			});
 		}
@@ -210,15 +216,14 @@ server.get('/api/product', function(req, res) {
 server.get('/api/product/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("product:" + id, function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			Product.findProductById(id, function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
-					cache.set("product:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("product:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
 			}, true);
 		}
@@ -262,7 +267,7 @@ server.put('/api/product/:_id', function(req, res) {
 		else {
 			console.log('updated');
 			cache.del("product");
-			cache.set("product:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("product:" + id);
 			res.json(emp);
 		}
 	});
@@ -277,7 +282,7 @@ server.delete('/api/product/:_id', function(req, res) {
 			{ message: 'fail', error: error });
 		else {
 			cache.del("product");
-			cache.set("product:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("product:" + id);
 			res.status(200).send(
 				{message: 'ok'});
 		}
@@ -289,16 +294,15 @@ server.delete('/api/product/:_id', function(req, res) {
 server.get('/api/purchase', function(req, res) {
 	console.log('sending purchases');
 	cache.get("purchase", function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep))
+		if(err || isEmpty(rep))
 		{
+			if(err) console.log(err)
 			Purchase.getPurchases(function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
-					cache.set("purchase", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("purchase", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
 			}, true, true);
 		}
@@ -312,18 +316,17 @@ server.get('/api/purchase', function(req, res) {
 server.get('/api/purchase/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("purchase:" + id, function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep))
+		if(err || isEmpty(rep))
 		{
+			if(err) console.log(err)
 			Purchase.findPurchaseById(id, function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
-					cache.set("purchase:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("purchase:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
-			});
+			}, true);
 		}
 		else {
 			res.json(JSON.parse(rep));
@@ -343,7 +346,6 @@ server.post('/api/purchase', function(req, res) {
 		}
 		else {
 			cache.del("purchase");
-			cache.set("purchase:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 			res.json(emp);
 		}
 	});
@@ -354,15 +356,14 @@ server.post('/api/purchase', function(req, res) {
 server.get('/api/shop', function(req, res) {
 	console.log('sending shops');
 	cache.get("shop", function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			Shop.getShops(function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
 					res.json(emp);
-					cache.set("shop", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("shop", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
 			});
 		}
@@ -378,18 +379,17 @@ server.get('/api/shop/:_id', function(req, res) {
 	var id = req.params._id;
 
 	cache.get("shop:"+id, function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err}
-			)
-		else if(isEmpty(rep))
+
+		if(err || isEmpty(rep))
 		{
+			if(err) console.log(err)
 			Shop.findShopById(id, function (error, emp) {
 				if(error) {
 					res.status(400).send({ message: 'fail', error: error });
 				}
 				else {
 					res.json(emp);
-					cache.set("shop:"+id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("shop:"+id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 				}
 			})
 		}
@@ -451,6 +451,7 @@ server.put('/api/shop/:_id', function(req, res) {
 		else {
 			console.log('updated');
 			cache.del("shop");
+			cache.del("shop:"+id);
 			res.json(emp);
 		}
 	});
@@ -461,14 +462,13 @@ server.put('/api/shop/:_id', function(req, res) {
 server.get('/api/stockchange', function(req, res) {
 	console.log('sending stock changes');
 	cache.get("stockchange", function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			StockChange.getStockChanges(function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
-					cache.set("stockchange", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("stockchange", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 					res.json(emp);
 				}
 			}, true, true);
@@ -483,14 +483,13 @@ server.get('/api/stockchange', function(req, res) {
 server.get('/api/stockchange/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("stockchange:" + id, function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			StockChange.findStockChangeById(id, function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
-					cache.set("stockchange:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("stockchange:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 					res.json(emp);
 				}
 			}, true);
@@ -531,7 +530,6 @@ server.post('/api/stockchange/:_id/items', function(req, res) {
 		}
 		else {
 			cache.del("stockchange");
-			cache.set("stockchange:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 			res.json(emp);
 		}
 	});
@@ -554,7 +552,7 @@ server.put('/api/stockchange/:_id/items', function(req, res) {
 		else {
 			console.log('updated');
 			cache.del("stockchange");
-			cache.set("stockchange:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("stockchange:" + id);
 			res.json(emp);
 		}
 	});
@@ -566,14 +564,13 @@ server.put('/api/stockchange/:_id/items', function(req, res) {
 server.get('/api/supplier', function(req, res) {
 	console.log('sending suppliers');
 	cache.get("supplier", function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			Supplier.getSuppliers(function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
-					cache.set("supplier", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("supplier", JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 					res.json(emp);
 				}
 			});
@@ -588,14 +585,13 @@ server.get('/api/supplier', function(req, res) {
 server.get('/api/supplier/:_id', function(req, res) {
 	var id = req.params._id;
 	cache.get("supplier:" + id, function(err, rep) {
-		if(err) res.status(401).send(
-			{ message: 'cache fail', error: err} );
-		else if(isEmpty(rep)) {
+		if(err || isEmpty(rep)) {
+			if(err) console.log(err)
 			Supplier.findSupplierById(id, function (error, emp) {
 				if(error) res.status(400).send(
 					{ message: 'fail', error: error });
 				else {
-					cache.set("supplier:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+					if(!(err)) cache.set("supplier:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
 					res.json(emp);
 				}
 			});
@@ -633,7 +629,7 @@ server.delete('/api/supplier/:_id', function(req, res) {
 			{ message: 'fail', error: error });
 		else {
 			cache.del("supplier");
-			cache.set("supplier:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("supplier:" + id);
 			res.status(200).send(
 				{message: 'ok'});
 		}
@@ -657,7 +653,7 @@ server.put('/api/supplier/:_id', function(req, res) {
 		else {
 			console.log('updated');
 			cache.del("supplier");
-			cache.set("supplier:" + id, JSON.stringify(emp), 'EX', CACHE_INTERVAL_SEC);
+			cache.del("supplier:" + id);
 			res.json(emp);
 		}
 	});
